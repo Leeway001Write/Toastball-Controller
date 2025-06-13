@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Toasterball Controller</title>
+
+        <style>
+            #buttonContainer {
+                display:flex;
+                width: 100vw;
+                height: 70vh;
+                background-color: rgb(219, 44, 73);
+            }
+            #leftButton {
+                width: 50vw;
+                height: 70vh;
+                color: white;
+                font-family: 'Trebuchet MS', sans-serif;
+                font-size: 50vh;
+                text-align: center;
+                line-height: 70vh;
+                touch-action: none;
+            }
+            #rightButton {
+                width: 50vw;
+                height: 70vh;
+                color: white;
+                font-family: 'Trebuchet MS', sans-serif;
+                font-size: 50vh;
+                text-align: center;
+                line-height: 70vh;
+                touch-action: none;
+            }
+
+            #menuContainer {
+                display:flex;
+                width: 100vw;
+                height: 30vh;
+                color: white;
+                font-family: 'Trebuchet MS', sans-serif;
+                font-size: 15vh;
+                text-align: center;
+                line-height: 30vh;
+            }
+            #backButton {
+                width: 10vw;
+                height: 30vh;
+                font-size: 8vh;
+            }
+            #middleButton {
+                width: 60vw;
+                height: 30vh;
+            }
+            #nextButton {
+                width: 30vw;
+                height: 30vh;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="buttonContainer">
+            <div id="leftButton">&lt</div>
+            <div id="rightButton">></div>
+        </div>
+        <div id="menuContainer">
+            <div id="backButton">esc</div>
+            <div id="middleButton">v GRAB v</div>
+            <div id="nextButton">[></div>
+        </div>
+
+        <script>
+            const COLOR_L = "crimson";
+            const COLOR_R = "cornflowerblue";
+            const COLOR_L_PRESSED = "black";
+            const COLOR_R_PRESSED = "black";
+            const COLOR_B = "darkgrey";
+            const COLOR_B_PRESSED = "black";
+            const COLOR_M = "bisque";
+            const COLOR_M_PRESSED = "brown";
+            const COLOR_N = "darkgrey";
+            const COLOR_N_PRESSED = "black";
+
+            const socket = new WebSocket("ws://172.20.10.2:8080/ws");
+            const leftButton = document.getElementById("leftButton");
+            const rightButton = document.getElementById("rightButton");
+            const backButton = document.getElementById("backButton");
+            const nextButton = document.getElementById("nextButton");
+
+            const phoneId = 1234;
+
+            leftButton.addEventListener("touchstart", pressLeft, false);
+            leftButton.addEventListener("touchend", releaseLeft, false);
+            rightButton.addEventListener("touchstart", pressRight, false);
+            rightButton.addEventListener("touchend", releaseRight, false);
+            backButton.addEventListener("touchstart", pressBack, false);
+            backButton.addEventListener("touchend", releaseBack, false);
+            middleButton.addEventListener("touchstart", pressMiddle, false);
+            middleButton.addEventListener("touchend", releaseMiddle, false);
+            nextButton.addEventListener("touchstart", pressNext, false);
+            nextButton.addEventListener("touchend", releaseNext, false);
+
+            leftButton.style.backgroundColor = COLOR_L;
+            rightButton.style.backgroundColor = COLOR_R;
+            backButton.style.backgroundColor = COLOR_B;
+            middleButton.style.backgroundColor = COLOR_M;
+            nextButton.style.backgroundColor = COLOR_N;
+
+            function pressLeft(event) {
+                event.preventDefault();
+
+                sendPresses(0,1);
+                leftButton.style.backgroundColor = COLOR_L_PRESSED;
+            }
+            function releaseLeft(event) {
+                event.preventDefault();
+
+                sendPresses(0,0);
+                leftButton.style.backgroundColor = COLOR_L;
+            }
+            function pressRight(event) {
+                event.preventDefault();
+
+                sendPresses(1,1);
+                rightButton.style.backgroundColor = COLOR_R_PRESSED;
+            }
+            function releaseRight(event) {
+                event.preventDefault();
+
+                sendPresses(1,0);
+                rightButton.style.backgroundColor = COLOR_R;
+            }
+
+            function pressBack(event) {
+                event.preventDefault();
+
+                sendPresses(2,1);
+                backButton.style.backgroundColor = COLOR_B_PRESSED;
+            }
+            function releaseBack(event) {
+                event.preventDefault();
+
+                sendPresses(2,0);
+                backButton.style.backgroundColor = COLOR_B;
+            }
+            function pressMiddle(event) {
+                event.preventDefault();
+
+                sendPresses(3,1);
+                middleButton.style.backgroundColor = COLOR_M_PRESSED;
+            }
+            function releaseMiddle(event) {
+                event.preventDefault();
+
+                sendPresses(3,0);
+                middleButton.style.backgroundColor = COLOR_M;
+            }
+            function pressNext(event) {
+                event.preventDefault();
+
+                sendPresses(4,1);
+                nextButton.style.backgroundColor = COLOR_N_PRESSED;
+            }
+            function releaseNext(event) {
+                event.preventDefault();
+
+                sendPresses(4,0);
+                nextButton.style.backgroundColor = COLOR_N;
+            }
+
+            /**
+             * Send updated button data to server
+             * 
+             * +---------buffer---------+
+             * [0,0,0,0,  0,    0       ]
+             *  phoneId   L/R   pressed?
+             *           (L=0)
+             *           (R=1)
+            */
+            function sendPresses(side, isPressed) {
+                const buffer = new Uint8Array(6);
+
+                const view = new DataView(buffer.buffer);
+                view.setUint32(0, phoneId);
+                view.setUint8(4, side);
+                view.setUint8(5, isPressed);
+
+                socket.send(buffer);
+            }
+        </script>
+    </body>
+</html>
