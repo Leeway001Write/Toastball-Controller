@@ -3,24 +3,19 @@ package main
 import (
 	"fmt"
 
+	"net"
 	"net/http"
 	"github.com/gorilla/websocket"
-	//"encoding/binary"
 	"github.com/micmonay/keybd_event"
+	"strconv"
 )
 
-var leftKb keybd_event.KeyBonding;
-var rightKb keybd_event.KeyBonding;
-var backKb keybd_event.KeyBonding;
-var middleKb keybd_event.KeyBonding;
-var nextKb keybd_event.KeyBonding;
+var players map[string]map[string]*keybd_event.KeyBonding
+var playerNumbers map[string]int;
 
 var upgrader = websocket.Upgrader {
 	ReadBufferSize: 1024,
 	WriteBufferSize: 1024,
-	CheckOrigin: func(r *http.Request) bool {
-        return true // allow all origins (only for testing!)
-    },
 }
 
 /**
@@ -34,99 +29,146 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	fmt.Println("WebSocket connected successfully")
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		fmt.Println("Failed to parse remote address:", err)
+	}
+	id := host
+	plrNum := addPlayer(id)
+	fmt.Println("Player", plrNum, "joined:", id)
+	conn.WriteMessage(websocket.TextMessage, []byte(strconv.Itoa(plrNum)))
 
 	for {
 		msgType, msg, err := conn.ReadMessage()
 		if err != nil {
-			fmt.Println("Error reading message:", err)
+			//fmt.Println("Error reading message:", err)
 		}
-		//fmt.Println("Message from client:", msgType, string(msg))
 
-		if msgType == websocket.BinaryMessage && len(msg) >= 6 {
-			//phoneId := int(binary.BigEndian.Uint32(msg[:4]))
-			side := int(msg[4])
-			isPressed := int(msg[5])
+		if msgType == websocket.BinaryMessage && len(msg) >= 2 {
+			button := int(msg[0])
+			isPressed := int(msg[1])
 
-			//fmt.Println("phoneId =", phoneId, "side = ", side, "isPresed = ", isPressed)
-
-			updateKeys(side, isPressed);
+			updateKeys(id, button, isPressed);
 		}
 	}
 }
 
 /**
+* Set up player's id and key bonds
+*
+* Returns player number (1 or 2)
+*/
+func addPlayer(id string) int {
+	var plrNum = len(players) + 1
+
+	// Check if player already exists (probably reloaded the page)
+	_, ok := players[id]
+	if ok {
+		plrNum = playerNumbers[id]
+		fmt.Println("Player", plrNum, "already exists:", id)
+	} else {
+		// New player (as long as there are no more than 2)
+		if plrNum <= 2 {
+			// Create Key Bondings
+			players[id] = make(map[string]*keybd_event.KeyBonding)
+			playerNumbers[id] = plrNum
+
+			leftKb, err := keybd_event.NewKeyBonding()
+			if err != nil {
+				fmt.Println("Error creating left button key bonds:", err)
+			}
+			rightKb, err := keybd_event.NewKeyBonding()
+			if err != nil {
+				fmt.Println("Error creating right button key bonds:", err)
+			}
+			backKb, err := keybd_event.NewKeyBonding()
+			if err != nil {
+				fmt.Println("Error creating back button key bonds:", err)
+			}
+			middleKb, err := keybd_event.NewKeyBonding()
+			if err != nil {
+				fmt.Println("Error creating middle button key bonds:", err)
+			}
+			nextKb, err := keybd_event.NewKeyBonding()
+			if err != nil {
+				fmt.Println("Error creating next button key bonds:", err)
+			}
+
+			// Bond keys unique to player
+			if plrNum == 2 {
+				leftKb.SetKeys(keybd_event.VK_A)
+				rightKb.SetKeys(keybd_event.VK_D)
+				middleKb.SetKeys(keybd_event.VK_S)
+				backKb.SetKeys(keybd_event.VK_ESC)
+				nextKb.SetKeys(keybd_event.VK_SPACE)
+				fmt.Println("P1 keys bound")
+			} else {
+				leftKb.SetKeys(keybd_event.VK_LMENU)
+				rightKb.SetKeys(keybd_event.VK_RMENU)
+				middleKb.SetKeys(keybd_event.VK_DOWN)
+				backKb.SetKeys(keybd_event.VK_BACKSPACE)
+				nextKb.SetKeys(keybd_event.VK_ENTER, keybd_event.VK_SPACE)
+				fmt.Println("P2 keys bound")
+			}
+
+			// Save Bondings
+			players[id]["left"] = &leftKb;
+			players[id]["right"] = &rightKb;
+			players[id]["back"] = &backKb;
+			players[id]["middle"] = &middleKb;
+			players[id]["next"] = &nextKb;
+		}
+	}
+
+	return plrNum
+}
+
+/**
 * Launch key presses
 */
-func updateKeys(button int, isPressed int) {
+func updateKeys(plr string, button int, isPressed int) {
 	if button == 0 {
 		// LEFT
 		if isPressed == 1 {
-			leftKb.Press()
+			players[plr]["left"].Press()
 		} else {
-			leftKb.Release()
+			players[plr]["left"].Release()
 		}
 	} else if button == 1 {
 		// RIGHT
 		if isPressed == 1 {
-			rightKb.Press()
+			players[plr]["right"].Press()
 		} else {
-			rightKb.Release()
+			players[plr]["right"].Release()
 		}
 	} else if button == 2 {
 		// BACK
 		if isPressed == 1 {
-			backKb.Press()
+			players[plr]["back"].Press()
 		} else {
-			backKb.Release()
+			players[plr]["back"].Release()
 		}
 	} else if button == 3 {
 		// MIDDLE
 		if isPressed == 1 {
-			middleKb.Press()
+			players[plr]["middle"].Press()
 		} else {
-			middleKb.Release()
+			players[plr]["middle"].Release()
 		}
 	} else {
 		// NEXT
 		if isPressed == 1 {
-			nextKb.Press()
+			players[plr]["next"].Press()
 		} else {
-			nextKb.Release()
+			players[plr]["next"].Release()
 		}
 	}
 }
 
 func main() {
-	var err error;
-
-	// Start key bonds
-	leftKb, err = keybd_event.NewKeyBonding()
-	if err != nil {
-		fmt.Println("Error creating left button key bonds:", err)
-	}
-	rightKb, err = keybd_event.NewKeyBonding()
-	if err != nil {
-		fmt.Println("Error creating right button key bonds:", err)
-	}
-	backKb, err = keybd_event.NewKeyBonding()
-	if err != nil {
-		fmt.Println("Error creating back button key bonds:", err)
-	}
-	middleKb, err = keybd_event.NewKeyBonding()
-	if err != nil {
-		fmt.Println("Error creating middle button key bonds:", err)
-	}
-	nextKb, err = keybd_event.NewKeyBonding()
-	if err != nil {
-		fmt.Println("Error creating next button key bonds:", err)
-	}
-
-	leftKb.SetKeys(keybd_event.VK_A)
-	rightKb.SetKeys(keybd_event.VK_D)
-	backKb.SetKeys(keybd_event.VK_ESC)
-	middleKb.SetKeys(keybd_event.VK_S)
-	nextKb.SetKeys(keybd_event.VK_SPACE)
+	// Initialize players container
+	players = make(map[string]map[string]*keybd_event.KeyBonding)
+	playerNumbers = make(map[string]int)
 
 	// Serve HTML
 	http.Handle("/", http.FileServer(http.Dir("static")))
@@ -135,6 +177,6 @@ func main() {
 	http.HandleFunc("/ws", wsHandler)
 
 	// Start http
-	fmt.Println("Server running at http://172.20.10.2:8080")
+	fmt.Println("Server running at http://192.168.1.175:8080")
 	http.ListenAndServe("0.0.0.0:8080", nil)
 }

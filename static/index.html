@@ -8,7 +8,6 @@
                 display:flex;
                 width: 100vw;
                 height: 70vh;
-                background-color: rgb(219, 44, 73);
             }
             #leftButton {
                 width: 50vw;
@@ -18,16 +17,15 @@
                 font-size: 50vh;
                 text-align: center;
                 line-height: 70vh;
+                border-radius: 30px;
                 touch-action: none;
             }
             #rightButton {
                 width: 50vw;
                 height: 70vh;
-                color: white;
-                font-family: 'Trebuchet MS', sans-serif;
                 font-size: 50vh;
-                text-align: center;
                 line-height: 70vh;
+                border-radius: 30px;
                 touch-action: none;
             }
 
@@ -35,8 +33,6 @@
                 display:flex;
                 width: 100vw;
                 height: 30vh;
-                color: white;
-                font-family: 'Trebuchet MS', sans-serif;
                 font-size: 15vh;
                 text-align: center;
                 line-height: 30vh;
@@ -45,19 +41,28 @@
                 width: 10vw;
                 height: 30vh;
                 font-size: 8vh;
+                border-radius:30px;
             }
             #middleButton {
                 width: 60vw;
                 height: 30vh;
+                border-radius: 30px;
             }
             #nextButton {
                 width: 30vw;
                 height: 30vh;
+                border-radius: 30px;
             }
         </style>
     </head>
 
-    <body>
+    <body
+        style="background-color: white;
+            color: white;
+            font-family: 'Trebuchet MS', sans-serif;
+            font-weight: bolder;
+            text-align: center;"
+    >
         <div id="buttonContainer">
             <div id="leftButton">&lt</div>
             <div id="rightButton">></div>
@@ -80,13 +85,14 @@
             const COLOR_N = "darkgrey";
             const COLOR_N_PRESSED = "black";
 
-            const socket = new WebSocket("ws://172.20.10.2:8080/ws");
+            const socket = new WebSocket("ws://192.168.1.175:8080/ws");
             const leftButton = document.getElementById("leftButton");
             const rightButton = document.getElementById("rightButton");
             const backButton = document.getElementById("backButton");
+            const middleButton = document.getElementById("middleButton");
             const nextButton = document.getElementById("nextButton");
 
-            const phoneId = 1234;
+            socket.addEventListener("message", updatePlayerNumber, false)
 
             leftButton.addEventListener("touchstart", pressLeft, false);
             leftButton.addEventListener("touchend", releaseLeft, false);
@@ -104,6 +110,12 @@
             backButton.style.backgroundColor = COLOR_B;
             middleButton.style.backgroundColor = COLOR_M;
             nextButton.style.backgroundColor = COLOR_N;
+
+            function updatePlayerNumber(event) {
+                msg = event.data;
+
+                nextButton.innerText = "P"+msg;
+            }
 
             function pressLeft(event) {
                 event.preventDefault();
@@ -170,19 +182,21 @@
             /**
              * Send updated button data to server
              * 
-             * +---------buffer---------+
-             * [0,0,0,0,  0,    0       ]
-             *  phoneId   L/R   pressed?
-             *           (L=0)
-             *           (R=1)
+             * +-----buffer-----+
+             * [0,      0       ]
+             *  button  pressed?
+             *  (L=0)
+             *  (R=1)
+             *  (B=2)
+             *  (M=3)
+             *  (N=4)
             */
             function sendPresses(side, isPressed) {
-                const buffer = new Uint8Array(6);
+                const buffer = new Uint8Array(2);
 
                 const view = new DataView(buffer.buffer);
-                view.setUint32(0, phoneId);
-                view.setUint8(4, side);
-                view.setUint8(5, isPressed);
+                view.setUint8(0, side);
+                view.setUint8(1, isPressed);
 
                 socket.send(buffer);
             }
