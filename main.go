@@ -107,7 +107,7 @@ func addPlayer(id string) int {
 				rightKb.SetKeys(keybd_event.VK_RMENU)
 				middleKb.SetKeys(keybd_event.VK_DOWN)
 				backKb.SetKeys(keybd_event.VK_BACKSPACE)
-				nextKb.SetKeys(keybd_event.VK_ENTER, keybd_event.VK_SPACE)
+				nextKb.SetKeys(keybd_event.VK_ENTER)
 				fmt.Println("P2 keys bound")
 			}
 
