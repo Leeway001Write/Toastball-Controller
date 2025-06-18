@@ -1,0 +1,6 @@
+C:\Users\ginja\workspace-mobileController\Toastball-Controller\ControllerPipeServer\obj\Debug\net7.0-windows\ControllerPipeServer.csproj.AssemblyReference.cache
+C:\Users\ginja\workspace-mobileController\Toastball-Controller\ControllerPipeServer\obj\Debug\net7.0-windows\ControllerPipeServer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ginja\workspace-mobileController\Toastball-Controller\ControllerPipeServer\obj\Debug\net7.0-windows\ControllerPipeServer.AssemblyInfoInputs.cache
+C:\Users\ginja\workspace-mobileController\Toastball-Controller\ControllerPipeServer\obj\Debug\net7.0-windows\ControllerPipeServer.AssemblyInfo.cs
+C:\Users\ginja\workspace-mobileController\Toastball-Controller\ControllerPipeServer\obj\Debug\net7.0-windows\ControllerPipeServer.csproj.CoreCompileInputs.cache
+C:\Users\ginja\workspace-mobileController\Toastball-Controller\ControllerPipeServer\obj\Debug\net7.0-windows\ControllerPipeServer.sourcelink.json

@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "PnyUratXgCE=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\ginja\\workspace-mobileController\\Toastball-Controller\\VigemController\\VigemTest.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ginja\\.nuget\\packages\\nefarius.vigem.client\\1.21.256\\nefarius.vigem.client.1.21.256.nupkg.sha512"
+  ],
+  "logs": []
+}
