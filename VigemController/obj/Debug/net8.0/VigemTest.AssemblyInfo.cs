@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VigemTest")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+272d543154e10dd65ae0e5f29c7f59b9aa16800b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c66122382918ad257aedd2c167840daf249470d4")]
 [assembly: System.Reflection.AssemblyProductAttribute("VigemTest")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VigemTest")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

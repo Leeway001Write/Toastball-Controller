@@ -133,6 +133,44 @@ func updateButtons(plr string, button int, isPressed int) {
 	if button == 0 {
 		// LEFT
 		if isPressed == 1 {
+			
+		} else {
+			
+		}
+	} else if button == 1 {
+		// RIGHT
+		if isPressed == 1 {
+			
+		} else {
+			
+		}
+	} else if button == 2 {
+		// BACK
+		if isPressed == 1 {
+			
+		} else {
+			
+		}
+	} else if button == 3 {
+		// MIDDLE
+		if isPressed == 1 {
+			
+		} else {
+			
+		}
+	} else {
+		// NEXT
+		if isPressed == 1 {
+			
+		} else {
+			
+		}
+	}
+}
+func updateButtonsOLDVERSION(plr string, button int, isPressed int) {
+	if button == 0 {
+		// LEFT
+		if isPressed == 1 {
 			players[plr]["left"].Press()
 		} else {
 			players[plr]["left"].Release()
