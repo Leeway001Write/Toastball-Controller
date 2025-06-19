@@ -100,7 +100,7 @@ func addPlayer(id string) int {
 			}
 
 			// Bond keys unique to player
-			if plrNum == 2 {
+			if plrNum == 1 {
 				leftKb.SetKeys(keybd_event.VK_A)
 				rightKb.SetKeys(keybd_event.VK_D)
 				middleKb.SetKeys(keybd_event.VK_S)
@@ -200,6 +200,6 @@ func main() {
 	http.HandleFunc("/ws", wsHandler)
 
 	// Start http
-	fmt.Println("Server running at http://10.130.5.134:8080")
+	fmt.Println("Server running at http://172.20.10.2:8080")
 	http.ListenAndServe("0.0.0.0:8080", nil)
 }
