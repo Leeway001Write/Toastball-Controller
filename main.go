@@ -13,8 +13,10 @@ import (
 	"github.com/Microsoft/go-winio"
 )
 
+var controllerPipe net.Conn
+
 var players map[string]map[string]*keybd_event.KeyBonding
-var playerNumbers map[string]int;
+var playerNumbers map[string]int
 
 var upgrader = websocket.Upgrader {
 	ReadBufferSize: 1024,
@@ -130,42 +132,7 @@ func addPlayer(id string) int {
 * Launch button presses
 */
 func updateButtons(plr string, button int, isPressed int) {
-	if button == 0 {
-		// LEFT
-		if isPressed == 1 {
-			
-		} else {
-			
-		}
-	} else if button == 1 {
-		// RIGHT
-		if isPressed == 1 {
-			
-		} else {
-			
-		}
-	} else if button == 2 {
-		// BACK
-		if isPressed == 1 {
-			
-		} else {
-			
-		}
-	} else if button == 3 {
-		// MIDDLE
-		if isPressed == 1 {
-			
-		} else {
-			
-		}
-	} else {
-		// NEXT
-		if isPressed == 1 {
-			
-		} else {
-			
-		}
-	}
+	io.WriteString(controllerPipe, strconv.Itoa(playerNumbers[plr]) + strconv.Itoa(button) + strconv.Itoa(isPressed))
 }
 func updateButtonsOLDVERSION(plr string, button int, isPressed int) {
 	if button == 0 {
@@ -210,18 +177,18 @@ func main() {
 	const pipeName = `\\.\pipe\ControllerInputPipe`
 
 	fmt.Println("Connecting to pipe server...")
-	pipeConn, err := winio.DialPipe(pipeName, nil)
+	var err error
+	controllerPipe, err = winio.DialPipe(pipeName, nil)
 	if err != nil {
 		fmt.Println("Failed to connect to pipe server", err)
 		return
 	}
-	defer pipeConn.Close()
+	defer controllerPipe.Close()
 
 	fmt.Println("Writing to pipe server...")
 
-	io.WriteString(pipeConn, "Heyo, wurld!")
+	//io.WriteString(controllerPipe, "Heyo, wurld!")
 
-	/*
 	// Initialize players container
 	players = make(map[string]map[string]*keybd_event.KeyBonding)
 	playerNumbers = make(map[string]int)
@@ -233,7 +200,6 @@ func main() {
 	http.HandleFunc("/ws", wsHandler)
 
 	// Start http
-	fmt.Println("Server running at http://192.168.1.175:8080")
+	fmt.Println("Server running at http://10.130.5.134:8080")
 	http.ListenAndServe("0.0.0.0:8080", nil)
-	*/
 }

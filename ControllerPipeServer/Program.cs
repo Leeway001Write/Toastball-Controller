@@ -1,9 +1,14 @@
 ﻿using System;
+
 using System.IO.Pipes;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.AccessControl;
 using System.Security.Principal;
+
+using Nefarius.ViGEm.Client;
+using Nefarius.ViGEm.Client.Targets;
+using Nefarius.ViGEm.Client.Targets.Xbox360;
 
 class Program
 {
@@ -34,6 +39,14 @@ class Program
         Console.WriteLine("Waiting for client...");
         await pipeServer.WaitForConnectionAsync();
         Console.WriteLine("Pipe connected!");
+
+        // LISTEN FOR MESSAGES
+
+        using var vigemClient = new ViGEmClient();
+
+        IXbox360Controller controller1 = vigemClient.CreateXbox360Controller();
+
+        Dictionary<int, IXbox360Controller> controllers = new Dictionary<int, IXbox360Controller>();
 
         byte[] buffer = new byte[256];
         int numBytesRead = await pipeServer.ReadAsync(buffer, 0, buffer.Length);
