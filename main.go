@@ -73,12 +73,12 @@ func addPlayer(id string) int {
 		fmt.Println("Player", plrNum, "already exists:", id)
 	} else {
 		// New player (as long as there are no more than 2)
-		if plrNum <= 2 {
+		if plrNum <= 4 {
 			// Create Key Bondings
 			players[id] = make(map[string]*keybd_event.KeyBonding)
 			playerNumbers[id] = plrNum
 
-			leftKb, err := keybd_event.NewKeyBonding()
+			/*leftKb, err := keybd_event.NewKeyBonding()
 			if err != nil {
 				fmt.Println("Error creating left button key bonds:", err)
 			}
@@ -121,7 +121,7 @@ func addPlayer(id string) int {
 			players[id]["right"] = &rightKb;
 			players[id]["back"] = &backKb;
 			players[id]["middle"] = &middleKb;
-			players[id]["next"] = &nextKb;
+			players[id]["next"] = &nextKb;*/
 		}
 	}
 
