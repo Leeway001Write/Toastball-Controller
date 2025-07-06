@@ -57,67 +57,78 @@ class Program
         controllers['4'] = controller4;
 
         controller1.Connect();
+        controller2.Connect();
+        controller3.Connect();
+        controller4.Connect();
         Thread.Sleep(100);
         Console.WriteLine("Controller connected");
 
-        while (true) {
-            byte[] buffer = new byte[256];
-            int numBytesRead = await pipeServer.ReadAsync(buffer, 0, buffer.Length);
+        try {
 
-            string message = Encoding.UTF8.GetString(buffer, 0, numBytesRead);
+            while (true) {
+                byte[] buffer = new byte[256];
+                int numBytesRead = await pipeServer.ReadAsync(buffer, 0, buffer.Length);
 
-            Console.WriteLine($"Received message: {message}");
+                string message = Encoding.UTF8.GetString(buffer, 0, numBytesRead);
 
-            char plrNumber = message[0];
-            char button = message[1];
-            char isPressed = message[2];
+                Console.WriteLine($"Received message: {message}");
 
-            //Console.WriteLine("plrNumber: " + plrNumber + ", button: " + button + ", isPressed: " + isPressed);
+                char plrNumber = message[0];
+                char button = message[1];
+                char isPressed = message[2];
 
-            if (button == '0') {
-                // LEFT
-                if (isPressed == '1') {
-                    controllers[plrNumber].SetButtonState(Xbox360Button.LeftShoulder, true);
-                    controllers[plrNumber].SetButtonState(Xbox360Button.Left, true);
+                Console.WriteLine("plrNumber: " + plrNumber + ", button: " + button + ", isPressed: " + isPressed);
+
+                if (button == '0') {
+                    // LEFT
+                    if (isPressed == '1') {
+                        controllers[plrNumber].SetButtonState(Xbox360Button.LeftShoulder, true);
+                        controllers[plrNumber].SetButtonState(Xbox360Button.Left, true);
+                    } else {
+                        controllers[plrNumber].SetButtonState(Xbox360Button.LeftShoulder, false);
+                        controllers[plrNumber].SetButtonState(Xbox360Button.Left, false);
+                    }
+                } else if (button == '1') {
+                    // RIGHT
+                    if (isPressed == '1') {
+                        controllers[plrNumber].SetButtonState(Xbox360Button.RightShoulder, true);
+                        controllers[plrNumber].SetButtonState(Xbox360Button.Right, true);
+                    } else {
+                        controllers[plrNumber].SetButtonState(Xbox360Button.RightShoulder, false);
+                        controllers[plrNumber].SetButtonState(Xbox360Button.Right, false);
+                    }
+                } else if (button == '2') {
+                    // BACK
+                    if (isPressed == '1') {
+                        controllers[plrNumber].SetButtonState(Xbox360Button.B, true);
+                        controllers[plrNumber].SetButtonState(Xbox360Button.Start, true);
+                    } else {
+                        controllers[plrNumber].SetButtonState(Xbox360Button.B, false);
+                        controllers[plrNumber].SetButtonState(Xbox360Button.Start, false);
+                    }
+                } else if (button == '3') {
+                    // MIDDLE
+                    if (isPressed == '1') {
+                        controllers[plrNumber].SetButtonState(Xbox360Button.Down, true);
+                        controllers[plrNumber].SetButtonState(Xbox360Button.A, true);
+                    } else {
+                        controllers[plrNumber].SetButtonState(Xbox360Button.Down, false);
+                        controllers[plrNumber].SetButtonState(Xbox360Button.A, false);
+                    }
                 } else {
-                    controllers[plrNumber].SetButtonState(Xbox360Button.LeftShoulder, false);
-                    controllers[plrNumber].SetButtonState(Xbox360Button.Left, false);
-                }
-            } else if (button == '1') {
-                // RIGHT
-                if (isPressed == '1') {
-                    controllers[plrNumber].SetButtonState(Xbox360Button.RightShoulder, true);
-                    controllers[plrNumber].SetButtonState(Xbox360Button.Right, true);
-                } else {
-                    controllers[plrNumber].SetButtonState(Xbox360Button.RightShoulder, false);
-                    controllers[plrNumber].SetButtonState(Xbox360Button.Right, false);
-                }
-            } else if (button == '2') {
-                // BACK
-                if (isPressed == '1') {
-                    controllers[plrNumber].SetButtonState(Xbox360Button.B, true);
-                    controllers[plrNumber].SetButtonState(Xbox360Button.Start, true);
-                } else {
-                    controllers[plrNumber].SetButtonState(Xbox360Button.B, false);
-                    controllers[plrNumber].SetButtonState(Xbox360Button.Start, false);
-                }
-            } else if (button == '3') {
-                // MIDDLE
-                if (isPressed == '1') {
-                    controllers[plrNumber].SetButtonState(Xbox360Button.Down, true);
-                    controllers[plrNumber].SetButtonState(Xbox360Button.A, true);
-                } else {
-                    controllers[plrNumber].SetButtonState(Xbox360Button.Down, false);
-                    controllers[plrNumber].SetButtonState(Xbox360Button.A, false);
-                }
-            } else {
-                // NEXT
-                if (isPressed == '1') {
-                    controllers[plrNumber].SetButtonState(Xbox360Button.A, true);
-                } else {
-                    controllers[plrNumber].SetButtonState(Xbox360Button.A, false);
+                    // NEXT
+                    if (isPressed == '1') {
+                        controllers[plrNumber].SetButtonState(Xbox360Button.A, true);
+                    } else {
+                        controllers[plrNumber].SetButtonState(Xbox360Button.A, false);
+                    }
                 }
             }
+        } finally {
+            controller1.Disconnect();
+            controller2.Disconnect();
+            controller3.Disconnect();
+            controller4.Disconnect();
         }
     }
 }

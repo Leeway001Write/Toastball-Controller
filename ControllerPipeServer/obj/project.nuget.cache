@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "PeuTsZvUbA4=",
+  "dgSpecHash": "A8NqtKsSjmM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\ginja\\workspace-mobileController\\Toastball-Controller\\ControllerPipeServer\\ControllerPipeServer.csproj",
+  "projectFilePath": "C:\\Users\\ginja\\Toastball-Controller\\ControllerPipeServer\\ControllerPipeServer.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ginja\\.nuget\\packages\\microsoft.netcore.platforms\\5.0.0\\microsoft.netcore.platforms.5.0.0.nupkg.sha512",
     "C:\\Users\\ginja\\.nuget\\packages\\nefarius.vigem.client\\1.21.256\\nefarius.vigem.client.1.21.256.nupkg.sha512",

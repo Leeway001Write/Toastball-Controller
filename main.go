@@ -200,6 +200,6 @@ func main() {
 	http.HandleFunc("/ws", wsHandler)
 
 	// Start http
-	fmt.Println("Server running at http://172.20.10.2:8080")
+	fmt.Println("Server running at http://172.20.10.6:8080")
 	http.ListenAndServe("0.0.0.0:8080", nil)
 }
