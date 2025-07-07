@@ -1,16 +1,22 @@
 package main
 
 import (
+	// Console output & string manipulation
 	"fmt"
-	"io"
+	"strconv"
+	"strings"
 
+	// Server and WebSocket
 	"net"
 	"net/http"
 	"github.com/gorilla/websocket"
-	"github.com/micmonay/keybd_event"
-	"strconv"
 
+	// Keyboard input
+	"github.com/micmonay/keybd_event"
+
+	// Pipe Server for Controller Input
 	"github.com/Microsoft/go-winio"
+	"io"
 )
 
 var controllerPipe net.Conn
@@ -27,6 +33,7 @@ var upgrader = websocket.Upgrader {
 * Handle WebSocket Requests to press buttons
 */
 func wsHandler(w http.ResponseWriter, r *http.Request) {
+	// Upgrade to WebSocket Connection
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		fmt.Println("Error during upgrade to WebSocket:", err)
@@ -34,7 +41,8 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	// Add a player based on the remote host address
+	host, _, err := net.SplitHostPort(r.RemoteAddr) // Exclude the port from the host id
 	if err != nil {
 		fmt.Println("Failed to parse remote address:", err)
 	}
@@ -43,10 +51,14 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Player", plrNum, "joined:", id)
 	conn.WriteMessage(websocket.TextMessage, []byte(strconv.Itoa(plrNum)))
 
+	// Read messages until error indicates connection was closed (player left/closed the web app)
 	for {
 		msgType, msg, err := conn.ReadMessage()
 		if err != nil {
-			//fmt.Println("Error reading message:", err)
+			if (strings.Contains(err.Error(), "wsarecv: An existing connection was forcibly closed by the remote host.")) {
+				fmt.Println("Player", plrNum, "left")
+				break
+			}
 		}
 
 		if msgType == websocket.BinaryMessage && len(msg) >= 2 {
@@ -174,6 +186,7 @@ func updateButtonsOLDVERSION(plr string, button int, isPressed int) {
 }
 
 func main() {
+	// Connect to Pipe Server for sending Controller Input
 	const pipeName = `\\.\pipe\ControllerInputPipe`
 
 	fmt.Println("Connecting to pipe server...")
@@ -185,9 +198,7 @@ func main() {
 	}
 	defer controllerPipe.Close()
 
-	fmt.Println("Writing to pipe server...")
-
-	//io.WriteString(controllerPipe, "Heyo, wurld!")
+	fmt.Println("Pipe connected")
 
 	// Initialize players container
 	players = make(map[string]map[string]*keybd_event.KeyBonding)
@@ -200,6 +211,6 @@ func main() {
 	http.HandleFunc("/ws", wsHandler)
 
 	// Start http
-	fmt.Println("Server running at http://172.20.10.6:8080")
+	fmt.Println("Server running at http://192.168.1.114:8080")
 	http.ListenAndServe("0.0.0.0:8080", nil)
 }
