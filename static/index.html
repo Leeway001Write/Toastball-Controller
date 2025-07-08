@@ -85,7 +85,7 @@
             const COLOR_N = "darkgrey";
             const COLOR_N_PRESSED = "black";
 
-            const socket = new WebSocket("ws://192.168.1.114:8080/ws");
+            const socket = new WebSocket("ws://" + location.host + "/ws");
             const leftButton = document.getElementById("leftButton");
             const rightButton = document.getElementById("rightButton");
             const backButton = document.getElementById("backButton");

@@ -11,12 +11,18 @@ import (
 	"net/http"
 	"github.com/gorilla/websocket"
 
+	// QR code
+	"github.com/skip2/go-qrcode"
+
 	// Keyboard input
 	"github.com/micmonay/keybd_event"
 
 	// Pipe Server for Controller Input
 	"github.com/Microsoft/go-winio"
 	"io"
+
+	// Custom utilities
+	"toasterballController/util"
 )
 
 var controllerPipe net.Conn
@@ -211,6 +217,16 @@ func main() {
 	http.HandleFunc("/ws", wsHandler)
 
 	// Start http
-	fmt.Println("Server running at http://192.168.1.114:8080")
+	addr := "http://" + util.GetWifiIP()
+	fmt.Println("Server running at " + addr)
+
+	// Display QR Code
+	qr, err := qrcode.New(addr, qrcode.Medium)
+	if (err != nil) {
+		fmt.Println("Error creating QR code:", err)
+	}
+	fmt.Println(qr.ToString(false))
+
+	// Serve
 	http.ListenAndServe("0.0.0.0:8080", nil)
 }
