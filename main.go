@@ -61,8 +61,10 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		msgType, msg, err := conn.ReadMessage()
 		if err != nil {
-			if (strings.Contains(err.Error(), "wsarecv: An existing connection was forcibly closed by the remote host.")) {
+			if (strings.Contains(err.Error(), "wsarecv: An existing connection was forcibly closed by the remote host.") ||
+			    strings.Contains(err.Error(), "websocket: close 1006 (abnormal closure): unexpected EOF")) {
 				fmt.Println("Player", plrNum, "left")
+				unpressButtons(id)
 				break
 			}
 		}
@@ -92,6 +94,9 @@ func addPlayer(id string) int {
 	} else {
 		// New player (as long as there are no more than 2)
 		if plrNum <= 4 {
+			// Connect controller
+			io.WriteString(controllerPipe, strconv.Itoa(plrNum))
+
 			// Create Key Bondings
 			players[id] = make(map[string]*keybd_event.KeyBonding)
 			playerNumbers[id] = plrNum
@@ -151,6 +156,9 @@ func addPlayer(id string) int {
 */
 func updateButtons(plr string, button int, isPressed int) {
 	io.WriteString(controllerPipe, strconv.Itoa(playerNumbers[plr]) + strconv.Itoa(button) + strconv.Itoa(isPressed))
+}
+func unpressButtons(plr string) {
+	io.WriteString(controllerPipe, strconv.Itoa(playerNumbers[plr]))
 }
 func updateButtonsOLDVERSION(plr string, button int, isPressed int) {
 	if button == 0 {

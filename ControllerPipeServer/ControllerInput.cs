@@ -44,24 +44,7 @@ class ControllerInput
 
         using var vigemClient = new ViGEmClient();
 
-        IXbox360Controller controller1 = vigemClient.CreateXbox360Controller();
-        IXbox360Controller controller2 = vigemClient.CreateXbox360Controller();
-        IXbox360Controller controller3 = vigemClient.CreateXbox360Controller();
-        IXbox360Controller controller4 = vigemClient.CreateXbox360Controller();
-
         Dictionary<char, IXbox360Controller> controllers = new Dictionary<char, IXbox360Controller>();
-
-        controllers['1'] = controller1;
-        controllers['2'] = controller2;
-        controllers['3'] = controller3;
-        controllers['4'] = controller4;
-
-        controller1.Connect();
-        controller2.Connect();
-        controller3.Connect();
-        controller4.Connect();
-        Thread.Sleep(100);
-        Console.WriteLine("Controller connected");
 
         try {
 
@@ -74,62 +57,82 @@ class ControllerInput
                 Console.WriteLine($"Received message: {message}");
                 if (message != "") {
                     char plrNumber = message[0];
-                    char button = message[1];
-                    char isPressed = message[2];
+                    if (message.Length == 1) {
+                        Console.WriteLine("Player" + plrNumber + "action:");
+                        IXbox360Controller controller;
+                        if (!controllers.TryGetValue(plrNumber, out controller)) {
+                            Console.WriteLine("\tCreate new controller");
+                            controller = vigemClient.CreateXbox360Controller();
+                            controller.Connect();
+                            controllers[plrNumber] = controller;
+                        }
 
-                    Console.WriteLine("plrNumber: " + plrNumber + ", button: " + button + ", isPressed: " + isPressed);
-
-                    if (button == '0') {
-                        // LEFT
-                        if (isPressed == '1') {
-                            controllers[plrNumber].SetButtonState(Xbox360Button.LeftShoulder, true);
-                            controllers[plrNumber].SetButtonState(Xbox360Button.Left, true);
-                        } else {
-                            controllers[plrNumber].SetButtonState(Xbox360Button.LeftShoulder, false);
-                            controllers[plrNumber].SetButtonState(Xbox360Button.Left, false);
-                        }
-                    } else if (button == '1') {
-                        // RIGHT
-                        if (isPressed == '1') {
-                            controllers[plrNumber].SetButtonState(Xbox360Button.RightShoulder, true);
-                            controllers[plrNumber].SetButtonState(Xbox360Button.Right, true);
-                        } else {
-                            controllers[plrNumber].SetButtonState(Xbox360Button.RightShoulder, false);
-                            controllers[plrNumber].SetButtonState(Xbox360Button.Right, false);
-                        }
-                    } else if (button == '2') {
-                        // BACK
-                        if (isPressed == '1') {
-                            controllers[plrNumber].SetButtonState(Xbox360Button.B, true);
-                            controllers[plrNumber].SetButtonState(Xbox360Button.Start, true);
-                        } else {
-                            controllers[plrNumber].SetButtonState(Xbox360Button.B, false);
-                            controllers[plrNumber].SetButtonState(Xbox360Button.Start, false);
-                        }
-                    } else if (button == '3') {
-                        // MIDDLE
-                        if (isPressed == '1') {
-                            controllers[plrNumber].SetButtonState(Xbox360Button.Down, true);
-                            controllers[plrNumber].SetButtonState(Xbox360Button.A, true);
-                        } else {
-                            controllers[plrNumber].SetButtonState(Xbox360Button.Down, false);
-                            controllers[plrNumber].SetButtonState(Xbox360Button.A, false);
-                        }
+                        Console.WriteLine("\tRelease buttons");
+                        controller.SetButtonState(Xbox360Button.LeftShoulder, false);
+                        controller.SetButtonState(Xbox360Button.RightShoulder, false);
+                        controller.SetButtonState(Xbox360Button.Left, false);
+                        controller.SetButtonState(Xbox360Button.Right, false);
+                        controller.SetButtonState(Xbox360Button.A, false);
+                        controller.SetButtonState(Xbox360Button.B, false);
+                        controller.SetButtonState(Xbox360Button.Down, false);
+                        controller.SetButtonState(Xbox360Button.Start, false);
                     } else {
-                        // NEXT
-                        if (isPressed == '1') {
-                            controllers[plrNumber].SetButtonState(Xbox360Button.A, true);
+                        char button = message[1];
+                        char isPressed = message[2];
+
+                        Console.WriteLine("plrNumber: " + plrNumber + ", button: " + button + ", isPressed: " + isPressed);
+
+                        if (button == '0') {
+                            // LEFT
+                            if (isPressed == '1') {
+                                controllers[plrNumber].SetButtonState(Xbox360Button.LeftShoulder, true);
+                                controllers[plrNumber].SetButtonState(Xbox360Button.Left, true);
+                            } else {
+                                controllers[plrNumber].SetButtonState(Xbox360Button.LeftShoulder, false);
+                                controllers[plrNumber].SetButtonState(Xbox360Button.Left, false);
+                            }
+                        } else if (button == '1') {
+                            // RIGHT
+                            if (isPressed == '1') {
+                                controllers[plrNumber].SetButtonState(Xbox360Button.RightShoulder, true);
+                                controllers[plrNumber].SetButtonState(Xbox360Button.Right, true);
+                            } else {
+                                controllers[plrNumber].SetButtonState(Xbox360Button.RightShoulder, false);
+                                controllers[plrNumber].SetButtonState(Xbox360Button.Right, false);
+                            }
+                        } else if (button == '2') {
+                            // BACK
+                            if (isPressed == '1') {
+                                controllers[plrNumber].SetButtonState(Xbox360Button.B, true);
+                                controllers[plrNumber].SetButtonState(Xbox360Button.Start, true);
+                            } else {
+                                controllers[plrNumber].SetButtonState(Xbox360Button.B, false);
+                                controllers[plrNumber].SetButtonState(Xbox360Button.Start, false);
+                            }
+                        } else if (button == '3') {
+                            // MIDDLE
+                            if (isPressed == '1') {
+                                controllers[plrNumber].SetButtonState(Xbox360Button.Down, true);
+                                controllers[plrNumber].SetButtonState(Xbox360Button.A, true);
+                            } else {
+                                controllers[plrNumber].SetButtonState(Xbox360Button.Down, false);
+                                controllers[plrNumber].SetButtonState(Xbox360Button.A, false);
+                            }
                         } else {
-                            controllers[plrNumber].SetButtonState(Xbox360Button.A, false);
+                            // NEXT
+                            if (isPressed == '1') {
+                                controllers[plrNumber].SetButtonState(Xbox360Button.A, true);
+                            } else {
+                                controllers[plrNumber].SetButtonState(Xbox360Button.A, false);
+                            }
                         }
                     }
                 }
             }
         } finally {
-            controller1.Disconnect();
-            controller2.Disconnect();
-            controller3.Disconnect();
-            controller4.Disconnect();
+            foreach (var controllerPair in controllers) {
+                controllerPair.Value.Disconnect();
+            }
         }
     }
 }
