@@ -273,11 +273,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ginja\\Toastball-Controller\\ControllerPipeServer\\ControllerPipeServer.csproj",
+      "projectUniqueName": "C:\\Users\\ginja\\Documents\\Projects\\Toastball-Controller\\ControllerPipeServer\\ControllerPipeServer.csproj",
       "projectName": "ControllerPipeServer",
-      "projectPath": "C:\\Users\\ginja\\Toastball-Controller\\ControllerPipeServer\\ControllerPipeServer.csproj",
+      "projectPath": "C:\\Users\\ginja\\Documents\\Projects\\Toastball-Controller\\ControllerPipeServer\\ControllerPipeServer.csproj",
       "packagesPath": "C:\\Users\\ginja\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ginja\\Toastball-Controller\\ControllerPipeServer\\obj\\",
+      "outputPath": "C:\\Users\\ginja\\Documents\\Projects\\Toastball-Controller\\ControllerPipeServer\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\ginja\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -335,7 +335,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
