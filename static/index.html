@@ -179,6 +179,21 @@
             }
 
             let joystickActive = false;
+
+            const handleRect = joystick_handle.getBoundingClientRect();
+            const mountRect = joystick_mount.getBoundingClientRect();
+
+            const diameter = handleRect.width;
+            const mountOffsetX = mountRect.left;
+            const mountOffsetY = mountRect.top;
+            const extraLength = 12;
+
+            const offsetX = -mountOffsetX - diameter/2;
+            const offsetY = -mountOffsetY - diameter/2;
+            const pixelsToCenter = (mountRect.width - handleRect.width) / 2;
+
+            resetJoy();
+
             function clamp(n, min, max) {
                 if (n > max) {
                     return max;
@@ -190,20 +205,10 @@
 
             function enableJoy(event) {
                 joystickActive = true;
+                joystick_handle.setPointerCapture(event.pointerId);
             }
 
             function updateJoy(event) {
-                const handleRect = joystick_handle.getBoundingClientRect();
-                const mountRect = joystick_mount.getBoundingClientRect();
-
-                const diameter = handleRect.width;
-                const mountOffsetX = mountRect.left;
-                const mountOffsetY = mountRect.top;
-                const extraLength = 12;
-
-                const offsetX = -mountOffsetX - diameter/2;
-                const offsetY = -mountOffsetY - diameter/2;
-
                 if (joystickActive) {
                     const x = clamp(event.clientX + offsetX, -extraLength, extraLength + mountRect.width - handleRect.width);
                     const y = clamp(event.clientY + offsetY, -extraLength, extraLength + mountRect.height - handleRect.height);
@@ -213,7 +218,7 @@
             }
             function resetJoy(event) {
                 joystickActive = false;
-                joystick_handle.style.transform = 'translate(50px, 50px)';
+                joystick_handle.style.transform = `translate(${pixelsToCenter}px, ${pixelsToCenter}px)`;
             }
 
             /**
