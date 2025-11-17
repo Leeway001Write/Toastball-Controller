@@ -4,6 +4,8 @@ body {
     font-family: 'Trebuchet MS', sans-serif;
     font-weight: bolder;
     text-align: center;
+
+    user-select: none;
 }
 
 #buttonContainer {
@@ -54,4 +56,38 @@ body {
     width: 30vw;
     height: 30vh;
     border-radius: 30px;
+}
+
+.joystick {
+    position: absolute;
+
+    background-color: gray;
+    /* border-style: solid;
+    border-width: 12px;
+    border-color: black;
+    border-radius: 100%; */
+
+    border-style: none;
+    border-radius: 100%;
+    box-shadow: 0 0 0px 12px black inset;
+}
+
+#joystick-mount {
+    width: 300px;
+    height: 300px;
+    top: calc(50% - 150px);
+    left: calc(20% - 150px);
+}
+
+#joystick-handle {
+    width: 200px;
+    height: 200px;
+    transform: translate(50px, 50px);
+
+    /* box-shadow: 0 0 10px 10px rgba(78, 78, 78, 0.5); */
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }

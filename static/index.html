@@ -7,6 +7,11 @@
 
     <body>
         <div id="buttonContainer">
+            <div id="joystick-mount" class="joystick">
+                <div id="joystick-handle" class="joystick">
+                    <p>0</p>
+                </div>
+            </div>
             <div id="leftButton">&lt</div>
             <div id="rightButton">></div>
         </div>
@@ -17,6 +22,51 @@
         </div>
 
         <script>
+            /**
+             * Send updated button data to server
+             * 
+             * +-----buffer-----+
+             * [0,      0       ]
+             *  button  pressed?
+             *  (L=0)
+             *  (R=1)
+             *  (B=2)
+             *  (M=3)
+             *  (N=4)
+            */
+            const Xbox360Button = {
+                Up: 12,
+                Down: 13,
+                Left: 14,
+                Right: 15,
+                Start: 8,
+                Back: 9,
+                LeftThumb: 10,
+                RightThumb: 11,
+                LeftShoulder: 4,
+                RightShoulder: 5,
+                Guide: 7,
+                A: 0,
+                B: 1,
+                X: 2,
+                Y: 3
+            }
+            const Xbox360Axis = {
+                LeftThumbX: 99,
+                LeftThumbY: 99,
+                RightThumbX: 99,
+                RightThumbY: 99
+
+            }
+            const Xbox360Slider = {
+                LeftTrigger: 99,
+                RightTrigger: 99
+            }
+            const ButtonState = {
+                PRESSED: 1,
+                UNPRESSED: 0
+            }
+
             const COLOR_L = "crimson";
             const COLOR_R = "cornflowerblue";
             const COLOR_L_PRESSED = "black";
@@ -34,6 +84,8 @@
             const backButton = document.getElementById("backButton");
             const middleButton = document.getElementById("middleButton");
             const nextButton = document.getElementById("nextButton");
+            const joystick_mount = document.getElementById("joystick-mount");
+            const joystick_handle = document.getElementById("joystick-handle");
 
             socket.addEventListener("message", updatePlayerNumber, false)
 
@@ -47,6 +99,10 @@
             middleButton.addEventListener("touchend", releaseMiddle, false);
             nextButton.addEventListener("touchstart", pressNext, false);
             nextButton.addEventListener("touchend", releaseNext, false);
+            joystick_mount.addEventListener("pointerdown", enableJoy, false);
+            joystick_mount.addEventListener("pointermove", updateJoy, false);
+            joystick_mount.addEventListener("pointerup", resetJoy, false);
+            joystick_mount.addEventListener("pointercancel", resetJoy, false);
 
             leftButton.style.backgroundColor = COLOR_L;
             rightButton.style.backgroundColor = COLOR_R;
@@ -120,6 +176,54 @@
 
                 sendPresses(4,0);
                 nextButton.style.backgroundColor = COLOR_N;
+            }
+
+            let joystickActive = false;
+            function clamp(n, min, max) {
+                if (n > max) {
+                    return max;
+                } else if (n < min) {
+                    return min;
+                }
+                return n;
+            }
+
+            function enableJoy(event) {
+                joystickActive = true;
+            }
+
+            function updateJoy(event) {
+                const handleStylesFloats = getComputedStyle(joystick_handle);
+                const handleRect = joystick_handle.getBoundingClientRect();
+                const mountRect = joystick_mount.getBoundingClientRect();
+
+                const diameter = handleRect.width;
+                const mountOffsetX = mountRect.left;
+                const mountOffsetY = mountRect.top;
+                const borderWidth = parseFloat(handleStylesFloats.borderWidth);
+
+                const offset = -mountOffsetX - diameter/2 + (mountRect.width - handleRect.width)/2;
+
+                // const borderWidth = parseFloat(getComputedStyle(joystick_handle).borderWidth);
+                // const diameter = joystick_handle.getBoundingClientRect().width;
+                // const mountDiameter = joystick_mount.getBoundingClientRect().width;
+                console.log(event.clientX - mountOffsetX, event.clientY - mountOffsetY);
+
+                if (joystickActive) {
+                    // const x = clamp(event.clientX - diameter/2 - 600, mountDiameter - diameter);
+                    // const y = clamp(event.clientY - diameter/2 - 100, -borderWidth*2, mountDiameter - diameter);
+
+                    const x = event.clientX + offset;
+                    const y = event.clientY + offset;
+
+                    //console.log(diameter, borderWidth);
+    
+                    joystick_handle.style.transform = `translate(${x}px, ${y}px)`;
+                }
+            }
+            function resetJoy(event) {
+                joystickActive = false;
+                joystick_handle.style.transform = 'translate(50px, 50px)';
             }
 
             /**
