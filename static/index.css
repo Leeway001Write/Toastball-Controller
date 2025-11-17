@@ -1,3 +1,6 @@
+html {
+}
+
 body {
     background-color: white;
     color: white;
@@ -6,16 +9,20 @@ body {
     text-align: center;
 
     user-select: none;
+
+    overflow: hidden;
+    overscroll-behavior: none;
+    height: 100%;
 }
 
 #buttonContainer {
     display:flex;
     width: 100vw;
-    height: 70vh;
+    height: 70%;
 }
 #leftButton {
     width: 50vw;
-    height: 70vh;
+    height: 100%;
     color: white;
     font-family: 'Trebuchet MS', sans-serif;
     font-size: 50vh;
@@ -26,7 +33,7 @@ body {
 }
 #rightButton {
     width: 50vw;
-    height: 70vh;
+    height: 70%;
     font-size: 50vh;
     line-height: 70vh;
     border-radius: 30px;
@@ -36,7 +43,7 @@ body {
 #menuContainer {
     display:flex;
     width: 100vw;
-    height: 30vh;
+    height: 30%;
     font-size: 15vh;
     text-align: center;
     line-height: 30vh;
@@ -62,14 +69,12 @@ body {
     position: absolute;
 
     background-color: gray;
-    /* border-style: solid;
-    border-width: 12px;
-    border-color: black;
-    border-radius: 100%; */
 
     border-style: none;
     border-radius: 100%;
     box-shadow: 0 0 0px 12px black inset;
+
+    touch-action: none;
 }
 
 #joystick-mount {

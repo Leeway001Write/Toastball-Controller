@@ -103,6 +103,8 @@
             joystick_mount.addEventListener("pointermove", updateJoy, false);
             joystick_mount.addEventListener("pointerup", resetJoy, false);
             joystick_mount.addEventListener("pointercancel", resetJoy, false);
+            window.addEventListener("resize", recalcGeometry, false);
+            window.addEventListener("orientationchange", recalcGeometry, false);
 
             leftButton.style.backgroundColor = COLOR_L;
             rightButton.style.backgroundColor = COLOR_R;
@@ -180,17 +182,17 @@
 
             let joystickActive = false;
 
-            const handleRect = joystick_handle.getBoundingClientRect();
-            const mountRect = joystick_mount.getBoundingClientRect();
+            let handleRect = joystick_handle.getBoundingClientRect();
+            let mountRect = joystick_mount.getBoundingClientRect();
 
-            const diameter = handleRect.width;
-            const mountOffsetX = mountRect.left;
-            const mountOffsetY = mountRect.top;
-            const extraLength = 12;
+            let diameter = handleRect.width;
+            let mountOffsetX = mountRect.left;
+            let mountOffsetY = mountRect.top;
+            let extraLength = 12;
 
-            const offsetX = -mountOffsetX - diameter/2;
-            const offsetY = -mountOffsetY - diameter/2;
-            const pixelsToCenter = (mountRect.width - handleRect.width) / 2;
+            let offsetX = -mountOffsetX - diameter/2;
+            let offsetY = -mountOffsetY - diameter/2;
+            let pixelsToCenter = (mountRect.width - handleRect.width) / 2;
 
             resetJoy();
 
@@ -206,6 +208,7 @@
             function enableJoy(event) {
                 joystickActive = true;
                 joystick_handle.setPointerCapture(event.pointerId);
+                recalcGeometry();
             }
 
             function updateJoy(event) {
@@ -219,6 +222,20 @@
             function resetJoy(event) {
                 joystickActive = false;
                 joystick_handle.style.transform = `translate(${pixelsToCenter}px, ${pixelsToCenter}px)`;
+            }
+
+            function recalcGeometry() {
+                handleRect = joystick_handle.getBoundingClientRect();
+                mountRect = joystick_mount.getBoundingClientRect();
+
+                diameter = handleRect.width;
+                mountOffsetX = mountRect.left;
+                mountOffsetY = mountRect.top;
+                extraLength = 12;
+
+                offsetX = -mountOffsetX - diameter/2;
+                offsetY = -mountOffsetY - diameter/2;
+                pixelsToCenter = (mountRect.width - handleRect.width) / 2;
             }
 
             /**
