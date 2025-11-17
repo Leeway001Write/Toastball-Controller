@@ -181,6 +181,9 @@
             }
 
             let joystickPointerId = null;
+            const doubleTapForThumbPress = true;
+            let lastTapTime = 0;
+            let doubleTapThreshold = 250; // ms
 
             let handleRect = joystick_handle.getBoundingClientRect();
             let mountRect = joystick_mount.getBoundingClientRect();
@@ -206,6 +209,16 @@
             }
 
             function enableJoy(event) {
+                if (doubleTapForThumbPress) {
+                    const now = performance.now();
+    
+                    if (now - lastTapTime < doubleTapThreshold) {
+                        onDoubleTap(event);
+                    }
+    
+                    lastTapTime = now;
+                }
+
                 if (!joystickPointerId) { // IF check prevents weird multitouch behavior
                     joystickPointerId = event.pointerId;
                     joystick_mount.setPointerCapture(event.pointerId);
@@ -226,7 +239,13 @@
                 if (!event || event.pointerId === joystickPointerId) {
                     joystickPointerId = null;
                     joystick_handle.style.transform = `translate(${pixelsToCenter}px, ${pixelsToCenter}px)`;
+                
+                    joystick_handle.textContent = "0 \n 0";
                 }
+            }
+
+            function onDoubleTap(event) {
+                console.log("double tap");
             }
 
             function getOutput(x, y) {
