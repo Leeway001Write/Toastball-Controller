@@ -193,30 +193,20 @@
             }
 
             function updateJoy(event) {
-                const handleStylesFloats = getComputedStyle(joystick_handle);
                 const handleRect = joystick_handle.getBoundingClientRect();
                 const mountRect = joystick_mount.getBoundingClientRect();
 
                 const diameter = handleRect.width;
                 const mountOffsetX = mountRect.left;
                 const mountOffsetY = mountRect.top;
-                const borderWidth = parseFloat(handleStylesFloats.borderWidth);
+                const extraLength = 12;
 
-                const offset = -mountOffsetX - diameter/2 + (mountRect.width - handleRect.width)/2;
-
-                // const borderWidth = parseFloat(getComputedStyle(joystick_handle).borderWidth);
-                // const diameter = joystick_handle.getBoundingClientRect().width;
-                // const mountDiameter = joystick_mount.getBoundingClientRect().width;
-                console.log(event.clientX - mountOffsetX, event.clientY - mountOffsetY);
+                const offsetX = -mountOffsetX - diameter/2;
+                const offsetY = -mountOffsetY - diameter/2;
 
                 if (joystickActive) {
-                    // const x = clamp(event.clientX - diameter/2 - 600, mountDiameter - diameter);
-                    // const y = clamp(event.clientY - diameter/2 - 100, -borderWidth*2, mountDiameter - diameter);
-
-                    const x = event.clientX + offset;
-                    const y = event.clientY + offset;
-
-                    //console.log(diameter, borderWidth);
+                    const x = clamp(event.clientX + offsetX, -extraLength, extraLength + mountRect.width - handleRect.width);
+                    const y = clamp(event.clientY + offsetY, -extraLength, extraLength + mountRect.height - handleRect.height);
     
                     joystick_handle.style.transform = `translate(${x}px, ${y}px)`;
                 }
