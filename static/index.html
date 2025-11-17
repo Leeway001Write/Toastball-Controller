@@ -180,7 +180,7 @@
                 nextButton.style.backgroundColor = COLOR_N;
             }
 
-            let joystickActive = false;
+            let joystickPointerId = null;
 
             let handleRect = joystick_handle.getBoundingClientRect();
             let mountRect = joystick_mount.getBoundingClientRect();
@@ -206,13 +206,14 @@
             }
 
             function enableJoy(event) {
-                joystickActive = true;
-                joystick_handle.setPointerCapture(event.pointerId);
-                recalcGeometry();
+                if (!joystickPointerId) { // IF check prevents weird multitouch behavior
+                    joystickPointerId = event.pointerId;
+                    joystick_mount.setPointerCapture(event.pointerId);
+                }
             }
 
             function updateJoy(event) {
-                if (joystickActive) {
+                if (event.pointerId === joystickPointerId) {
                     const x = clamp(event.clientX + offsetX, -extraLength, extraLength + mountRect.width - handleRect.width);
                     const y = clamp(event.clientY + offsetY, -extraLength, extraLength + mountRect.height - handleRect.height);
     
@@ -220,8 +221,10 @@
                 }
             }
             function resetJoy(event) {
-                joystickActive = false;
-                joystick_handle.style.transform = `translate(${pixelsToCenter}px, ${pixelsToCenter}px)`;
+                if (event.pointerId === joystickPointerId) {
+                    joystickPointerId = null;
+                    joystick_handle.style.transform = `translate(${pixelsToCenter}px, ${pixelsToCenter}px)`;
+                }
             }
 
             function recalcGeometry() {
