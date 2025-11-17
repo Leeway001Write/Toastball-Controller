@@ -218,14 +218,44 @@
                     const y = clamp(event.clientY + offsetY, -extraLength, extraLength + mountRect.height - handleRect.height);
     
                     joystick_handle.style.transform = `translate(${x}px, ${y}px)`;
+
+                    joystick_handle.textContent = getOutput(x, y).x + '\n' + getOutput(x,y).y;
                 }
             }
             function resetJoy(event) {
-                if (event.pointerId === joystickPointerId) {
+                if (!event || event.pointerId === joystickPointerId) {
                     joystickPointerId = null;
                     joystick_handle.style.transform = `translate(${pixelsToCenter}px, ${pixelsToCenter}px)`;
                 }
             }
+
+            function getOutput(x, y) {
+                const dx = x - pixelsToCenter;
+                const dy = y - pixelsToCenter;
+
+                const distance = Math.hypot(dx, dy);
+                const maxDistance = (mountRect.width - handleRect.width)/2;
+                const deadZone = maxDistance * 0.15;  // 15% inner dead-zone
+
+                // Inside dead zone — stop movement entirely
+                if (distance < deadZone) {
+                    return { x: 0, y: 0 };
+                }
+
+                // Normalize direction
+                const nx = dx / distance;
+                const ny = dy / distance;
+
+                // Remap distance from dead-zone boundary → max boundary
+                let scaledDist = (distance - deadZone) / (maxDistance - deadZone);
+                scaledDist = Math.min(scaledDist, 1);
+
+                return {
+                    x: nx * scaledDist,   // range: -1 → +1
+                    y: ny * scaledDist
+                };
+            }
+
 
             function recalcGeometry() {
                 handleRect = joystick_handle.getBoundingClientRect();
