@@ -182,6 +182,7 @@
 
             let joystickPointerId = null;
             const doubleTapForThumbPress = true;
+            const shouldMoveJoyOnTap = true;
             let lastTapTime = 0;
             let doubleTapThreshold = 250; // ms
 
@@ -222,6 +223,9 @@
                 if (!joystickPointerId) { // IF check prevents weird multitouch behavior
                     joystickPointerId = event.pointerId;
                     joystick_mount.setPointerCapture(event.pointerId);
+                    if (shouldMoveJoyOnTap) {
+                        updateJoy(event);
+                    }
                 }
             }
 
