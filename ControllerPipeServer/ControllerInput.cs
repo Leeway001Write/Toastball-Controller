@@ -76,11 +76,9 @@ class ControllerInput
                         controller.SetButtonState(Xbox360Button.B, false);
                         controller.SetButtonState(Xbox360Button.Down, false);
                         controller.SetButtonState(Xbox360Button.Start, false);
-                    } else {
+                    } else if (message.Length == 3) {
                         char button = message[1];
-                        char isPressed = message[2];
-
-                        Console.WriteLine("plrNumber: " + plrNumber + ", button: " + button + ", isPressed: " + isPressed);
+                        char isPressed = message[2];;
 
                         if (button == '0') {
                             // LEFT
@@ -126,6 +124,17 @@ class ControllerInput
                                 controllers[plrNumber].SetButtonState(Xbox360Button.A, false);
                             }
                         }
+                    } else if (message.Length == 4) {
+                        // Joystick input
+                        char axisId = message[1];
+                        short axisX = JoyAxisToVigem(message[2]);
+                        short axisY = JoyAxisToVigem(message[3]);
+
+                        Console.WriteLine("Axes: " + message[2] + " " + message[3] + ", " + axisY);
+                        controllers[plrNumber].SetAxisValue(Xbox360Axis.LeftThumbX, axisX);
+                        controllers[plrNumber].SetAxisValue(Xbox360Axis.LeftThumbY, axisY);
+                    } else {
+                        Console.WriteLine("ERROR: Invalid WebSocket message (expected 1, 3, or 4 bytes):", message);
                     }
                 }
             }
@@ -135,4 +144,14 @@ class ControllerInput
             }
         }
     }
+
+    private static short JoyAxisToVigem(char num) {
+        if (num == '0') {
+            return -32768;
+        }
+
+        double input = (num - 4) / 4.0; // Convert 0 to 8 scale to -1 to 1
+
+        return (short) Math.Floor(input * 32767);
+    }   
 }

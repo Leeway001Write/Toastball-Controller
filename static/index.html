@@ -232,6 +232,7 @@
     
                     joystick_handle.style.transform = `translate(${x}px, ${y}px)`;
 
+                    sendAxis(0, getOutput(x, y).x, getOutput(x,y).y);
                     joystick_handle.textContent = getOutput(x, y).x + '\n' + getOutput(x,y).y;
                 }
             }
@@ -240,6 +241,7 @@
                     joystickPointerId = null;
                     joystick_handle.style.transform = `translate(${pixelsToCenter}px, ${pixelsToCenter}px)`;
                 
+                    sendAxis(0, 0, 0);
                     joystick_handle.textContent = "0 \n 0";
                 }
             }
@@ -271,7 +273,7 @@
 
                 return {
                     x: nx * scaledDist,   // range: -1 → +1
-                    y: ny * scaledDist
+                    y: -ny * scaledDist
                 };
             }
 
@@ -310,6 +312,22 @@
                 view.setUint8(1, isPressed);
 
                 socket.send(buffer);
+            }
+
+            function sendAxis(axisId, x, y) {
+                const buffer = new Uint8Array(3);
+
+                const view = new DataView(buffer.buffer);
+                view.setUint8(0, axisId);
+                view.setInt8(1, convertAxis(x));
+                view.setInt8(2, convertAxis(y));
+
+                socket.send(buffer);
+            }
+
+            function convertAxis(num) {
+                // Convert -1 to 1 axis to 0 to 8
+                return Math.round(num * 4 + 4);
             }
         </script>
     </body>

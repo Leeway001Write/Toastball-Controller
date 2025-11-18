@@ -69,11 +69,21 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		if msgType == websocket.BinaryMessage && len(msg) >= 2 {
-			button := int(msg[0])
-			isPressed := int(msg[1])
+		if msgType == websocket.BinaryMessage {
+			if (len(msg) == 2) {
+				button := int(msg[0])
+				isPressed := int(msg[1])
 
-			updateButtons(id, button, isPressed);
+				fmt.Println("button");
+				updateButtons(id, button, isPressed);
+			} else if (len(msg) == 3) {
+				axisId := int(msg[0])
+				x := int(msg[1])
+				y := int(msg[2])
+
+				fmt.Println("Axis: ", x, y);
+				updateAxis(id, axisId, x, y)
+			}
 		}
 	}
 }
@@ -156,6 +166,9 @@ func addPlayer(id string) int {
 */
 func updateButtons(plr string, button int, isPressed int) {
 	io.WriteString(controllerPipe, strconv.Itoa(playerNumbers[plr]) + strconv.Itoa(button) + strconv.Itoa(isPressed))
+}
+func updateAxis(plr string, axisId int, x int, y int) {
+	io.WriteString(controllerPipe, strconv.Itoa(playerNumbers[plr]) + strconv.Itoa(axisId) + strconv.Itoa(x) + strconv.Itoa(y))
 }
 func unpressButtons(plr string) {
 	io.WriteString(controllerPipe, strconv.Itoa(playerNumbers[plr]))
