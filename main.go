@@ -9,6 +9,7 @@ import (
 	// Server and WebSocket
 	"net"
 	"net/http"
+
 	"github.com/gorilla/websocket"
 
 	// QR code
@@ -18,8 +19,9 @@ import (
 	"github.com/micmonay/keybd_event"
 
 	// Pipe Server for Controller Input
-	"github.com/Microsoft/go-winio"
 	"io"
+
+	"github.com/Microsoft/go-winio"
 
 	// Custom utilities
 	"toasterballController/util"
@@ -30,14 +32,14 @@ var controllerPipe net.Conn
 var players map[string]map[string]*keybd_event.KeyBonding
 var playerNumbers map[string]int
 
-var upgrader = websocket.Upgrader {
-	ReadBufferSize: 1024,
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }
 
 /**
 * Handle WebSocket Requests to press buttons
-*/
+ */
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	// Upgrade to WebSocket Connection
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -61,8 +63,8 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		msgType, msg, err := conn.ReadMessage()
 		if err != nil {
-			if (strings.Contains(err.Error(), "wsarecv: An existing connection was forcibly closed by the remote host.") ||
-			    strings.Contains(err.Error(), "websocket: close 1006 (abnormal closure): unexpected EOF")) {
+			if strings.Contains(err.Error(), "wsarecv: An existing connection was forcibly closed by the remote host.") ||
+				strings.Contains(err.Error(), "websocket: close 1006 (abnormal closure): unexpected EOF") {
 				fmt.Println("Player", plrNum, "left")
 				unpressButtons(id)
 				break
@@ -70,6 +72,10 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if msgType == websocket.BinaryMessage {
+			msg[0] = uint8(plrNum)
+			forwardToPipe(msg)
+
+			/* Old message parsing
 			if (len(msg) == 2) {
 				button := int(msg[0])
 				isPressed := int(msg[1])
@@ -84,6 +90,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Println("Axis: ", x, y);
 				updateAxis(id, axisId, x, y)
 			}
+			*/
 		}
 	}
 }
@@ -92,7 +99,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 * Set up player's id and controller
 *
 * Returns player number (1 or 2)
-*/
+ */
 func addPlayer(id string) int {
 	var plrNum = len(players) + 1
 
@@ -163,12 +170,23 @@ func addPlayer(id string) int {
 
 /**
 * Launch button presses
-*/
+ */
+func forwardToPipe(msg []byte) {
+	//fmt.Println("Plr=" + strconv.Itoa(int(msg[0])) + ", type=" + strconv.Itoa(int(msg[1])) + ", inputID=" + strconv.Itoa(int(msg[2])) + ", x=" + strconv.Itoa(int(msg[3])) + ", y=" + strconv.Itoa(int(msg[4])))
+	//fmt.Println(int8(msg[3]))
+	n, err := controllerPipe.Write(msg)
+	if err != nil {
+		fmt.Println("Pipe write error:", err)
+	}
+	if n != len(msg) {
+		fmt.Println("Partial pipe write:", n)
+	}
+}
 func updateButtons(plr string, button int, isPressed int) {
-	io.WriteString(controllerPipe, strconv.Itoa(playerNumbers[plr]) + strconv.Itoa(button) + strconv.Itoa(isPressed))
+	io.WriteString(controllerPipe, strconv.Itoa(playerNumbers[plr])+strconv.Itoa(button)+strconv.Itoa(isPressed))
 }
 func updateAxis(plr string, axisId int, x int, y int) {
-	io.WriteString(controllerPipe, strconv.Itoa(playerNumbers[plr]) + strconv.Itoa(axisId) + strconv.Itoa(x) + strconv.Itoa(y))
+	io.WriteString(controllerPipe, strconv.Itoa(playerNumbers[plr])+strconv.Itoa(axisId)+strconv.Itoa(x)+strconv.Itoa(y))
 }
 func unpressButtons(plr string) {
 	io.WriteString(controllerPipe, strconv.Itoa(playerNumbers[plr]))
@@ -243,7 +261,7 @@ func main() {
 
 	// Display QR Code
 	qr, err := qrcode.New(addr, qrcode.Medium)
-	if (err != nil) {
+	if err != nil {
 		fmt.Println("Error creating QR code:", err)
 	}
 	fmt.Println(qr.ToString(false))

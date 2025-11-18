@@ -32,8 +32,8 @@ class ControllerInput
             pipeName,
             PipeDirection.InOut,
             1,
-            PipeTransmissionMode.Byte,
-            PipeOptions.Asynchronous
+            PipeTransmissionMode.Message,
+            PipeOptions.None
         );
 
         Console.WriteLine("Waiting for client...");
@@ -47,8 +47,30 @@ class ControllerInput
         Dictionary<char, IXbox360Controller> controllers = new Dictionary<char, IXbox360Controller>();
 
         try {
+            const int PACKET_SIZE = 5;
+            byte[] buf = new byte[PACKET_SIZE];
 
-            while (true) {
+            while (true)
+            {
+                int n = pipeServer.Read(buf, 0, PACKET_SIZE);
+                if (n < PACKET_SIZE) {
+                    Console.Write("ERROR: Partial read");
+                }
+
+                // Process packet
+                byte plr = buf[0];
+                byte msgType = buf[1];
+                byte inputId = buf[2];
+                sbyte valX = (sbyte) buf[3];
+                sbyte valY = (sbyte) buf[4];
+
+                Console.WriteLine("Plr=" + plr + ", type=" + msgType + ", inputID=" + inputId + ", x=" + valX + ", y=" + valY + "\t\t(" + buf + ")");
+                // Console.WriteLine("RAW: " +
+                //     string.Join(",", buf.Select(b => b.ToString()))
+                // );
+
+
+                /*
                 byte[] buffer = new byte[256];
                 int numBytesRead = await pipeServer.ReadAsync(buffer, 0, buffer.Length);
 
@@ -137,6 +159,7 @@ class ControllerInput
                         Console.WriteLine("ERROR: Invalid WebSocket message (expected 1, 3, or 4 bytes):", message);
                     }
                 }
+                */
             }
         } finally {
             foreach (var controllerPair in controllers) {
