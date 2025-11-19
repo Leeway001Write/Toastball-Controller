@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ControllerPipeServer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fa641214b511e5bdc9661779e53c32c64c4d8d2d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7ab81b6c056d5133871d83a0c4f52e997d600678")]
 [assembly: System.Reflection.AssemblyProductAttribute("ControllerPipeServer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ControllerPipeServer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
