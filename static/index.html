@@ -83,8 +83,8 @@
 
             leftButton.addEventListener("touchstart", pressLeft, false);
             leftButton.addEventListener("touchend", releaseLeft, false);
-            rightButton.addEventListener("touchstart", pressRight, false);
-            rightButton.addEventListener("touchend", releaseRight, false);
+            rightButton.addEventListener("pointerdown", pressRight, false);
+            rightButton.addEventListener("pointerup", releaseRight, false);
             backButton.addEventListener("touchstart", pressBack, false);
             backButton.addEventListener("touchend", releaseBack, false);
             middleButton.addEventListener("touchstart", pressMiddle, false);
@@ -125,13 +125,13 @@
             function pressRight(event) {
                 event.preventDefault();
 
-                sendPresses(1,1);
+                sendPresses(Xbox360Button.A, true);
                 rightButton.style.backgroundColor = COLOR_R_PRESSED;
             }
             function releaseRight(event) {
                 event.preventDefault();
 
-                sendPresses(1,0);
+                sendPresses(Xbox360Button.A, false);
                 rightButton.style.backgroundColor = COLOR_R;
             }
 
@@ -300,7 +300,12 @@
              *  (N=4)
             */
             function sendPresses(buttonId, isPressed) {
-                const buffer = packMessage(InputType.BUTTON, buttonId, isPressed, 0x00);
+                let val = 0x00;
+                if (isPressed) {
+                    val = 0x01;
+                }
+
+                const buffer = packMessage(InputType.BUTTON, buttonId, val, 0x00);
                 socket.send(buffer);
             }
 

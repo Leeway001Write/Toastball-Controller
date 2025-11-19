@@ -12,6 +12,26 @@ using Nefarius.ViGEm.Client.Targets.Xbox360;
 
 class ControllerInput
 {
+
+    private static Xbox360Button[] BUTTON = {
+        Xbox360Button.A,
+        Xbox360Button.B,
+        Xbox360Button.X,
+        Xbox360Button.Y,
+        Xbox360Button.LeftShoulder,
+        Xbox360Button.RightShoulder,
+        Xbox360Button.Guide,
+        Xbox360Button.Start,
+        Xbox360Button.Start,
+        Xbox360Button.Back,
+        Xbox360Button.LeftThumb,
+        Xbox360Button.RightThumb,
+        Xbox360Button.Up,
+        Xbox360Button.Down,
+        Xbox360Button.Left,
+        Xbox360Button.Right
+    };
+
     static async Task Main()
     {
         var pipeName = "ControllerInputPipe";
@@ -105,7 +125,7 @@ class ControllerInput
                     case (0x01):
                         // AXIS
                         // Console.WriteLine($"plr={plr}, dictionary keys=[{string.Join(",", controllers.Keys)}]");
-                        Console.WriteLine(controllers.TryGetValue(plr, out controller));
+                        // Console.WriteLine(controllers.TryGetValue(plr, out controller));
                         try
                         {
                             controllers[plr].SetAxisValue(Xbox360Axis.LeftThumbX, inflateByteToShort(valX));
@@ -113,12 +133,13 @@ class ControllerInput
                         }
                         catch
                         {
-                            Console.WriteLine("Controller is not connected");
+                            Console.WriteLine("ERROR: Controller is not connected");
                         }
                         break;
 
                     case (0x02):
                         // BUTTON
+                        controllers[plr].SetButtonState(BUTTON[inputId], valX == 0x01);
                         break;
 
                     default:

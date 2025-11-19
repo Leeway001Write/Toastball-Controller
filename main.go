@@ -101,10 +101,10 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 * Returns player number (1 or 2)
  */
 func addPlayer(id string) int {
-	var plrNum = len(players) + 1
+	var plrNum = len(playerNumbers) + 1
 
 	// Check if player already exists (probably reloaded the page)
-	_, ok := players[id]
+	_, ok := playerNumbers[id]
 	if ok {
 		plrNum = playerNumbers[id]
 		fmt.Println("Player", plrNum, "already exists:", id)
