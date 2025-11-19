@@ -54,6 +54,11 @@ class ControllerInput
             {
                 int n = pipeServer.Read(buf, 0, PACKET_SIZE);
                 if (n < PACKET_SIZE) {
+                    if (n == 0) {
+                        Console.Write("Pipe Closed.");
+                        break;
+                    }
+
                     Console.Write("ERROR: Partial read");
                 }
 

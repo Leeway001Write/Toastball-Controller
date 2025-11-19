@@ -172,7 +172,7 @@ func addPlayer(id string) int {
 * Launch button presses
  */
 func forwardToPipe(msg []byte) {
-	//fmt.Println("Plr=" + strconv.Itoa(int(msg[0])) + ", type=" + strconv.Itoa(int(msg[1])) + ", inputID=" + strconv.Itoa(int(msg[2])) + ", x=" + strconv.Itoa(int(msg[3])) + ", y=" + strconv.Itoa(int(msg[4])))
+	fmt.Println("Plr=" + strconv.Itoa(int(msg[0])) + ", type=" + strconv.Itoa(int(msg[1])) + ", inputID=" + strconv.Itoa(int(msg[2])))
 	//fmt.Println(int8(msg[3]))
 	n, err := controllerPipe.Write(msg)
 	if err != nil {

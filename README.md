@@ -38,3 +38,26 @@ A web app for mobile to remote control a multiplayer game of Toasterball. This w
 3. **Backend C#** (controller emulator) **:**  
     Receives 5-byte buffer including player number.
 
+Maybe experiment with variable message sizes, reading first the message type and then reading the right number of bits to follow. This could even include the signal sent to connect the controller:
+```
+io.WriteString(controllerPipe, strconv.Itoa(plrNum))
+```
+This could instead be sent as a buffer just like input signals, and just only include the player and message type (message type being one indicating that this is just a ping to connect the controller; a value the frontend never sends for message type (or maybe one it does, if the frontend is triggering it anyway!)).
+This would also make it so buttons and triggers only need to be 4 bytes and not all 5.
+
+OR, a fixed-byte approach would look like this:
+| Byte | Connect Msg | Axis Msg | Button Msg | Comment             |
+| ---- | ----------- | -------- | ---------- | ------------------- |
+| 0    | PlayerID    | PlayerID | PlayerID   | Who triggered it    |
+| 1    | MsgType     | MsgType  | MsgType    | Axis, button, etc   |
+| 2    |             | AxisID   | ButtonID   | Which control       |
+| 3    |             | X        | Value      | Axis value or 0/1   |
+| 4    |             | Y        | -          | Axis value          |
+| 5+   | -           | Extra    | -          | Optional future use |
+
+Pros of this would mainly be avoiding extra issues with partial reads (Chat GPT says they could happen, I'm skeptical at this point) and avoiding complexity in general.  
+Here are Chat's reasons for including more than 5 bytes (future use):
+- Additional axes
+- Trigger pressure
+- Multi-touch gestures
+- Vibration / haptics commands

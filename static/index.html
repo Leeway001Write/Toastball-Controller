@@ -22,18 +22,12 @@
         </div>
 
         <script>
-            /**
-             * Send updated button data to server
-             * 
-             * +-----buffer-----+
-             * [0,      0       ]
-             *  button  pressed?
-             *  (L=0)
-             *  (R=1)
-             *  (B=2)
-             *  (M=3)
-             *  (N=4)
-            */
+            const InputTypes = {
+                CONNECT: 0x00,
+                AXIS: 0x01,
+                BUTTON: 0x02,
+                SLIDER: 0x03
+            }
             const Xbox360Button = {
                 Up: 12,
                 Down: 13,
@@ -52,15 +46,13 @@
                 Y: 3
             }
             const Xbox360Axis = {
-                LeftThumbX: 99,
-                LeftThumbY: 99,
-                RightThumbX: 99,
-                RightThumbY: 99
+                LeftThumb: 1,
+                RightThumb: 2
 
             }
             const Xbox360Slider = {
-                LeftTrigger: 99,
-                RightTrigger: 99
+                LeftTrigger: 1,
+                RightTrigger: 2
             }
             const ButtonState = {
                 PRESSED: 1,
@@ -307,37 +299,47 @@
              *  (M=3)
              *  (N=4)
             */
-            function sendPresses(side, isPressed) {
-                const buffer = new Uint8Array(2);
-
-                const view = new DataView(buffer.buffer);
-                view.setUint8(0, side);
-                view.setUint8(1, isPressed);
-
+            function sendPresses(buttonId, isPressed) {
+                const buffer = packMessage(InputTypes.BUTTON, buttonId, isPressed, 0x00);
                 socket.send(buffer);
             }
 
-            function sendAxis(axisId, x, y) {
-                const buffer = packAxis(1, axisId, x, y);
-
+            function sendAxis(axisId, nx, ny) {
+                const buffer = packMessage(InputTypes.AXIS, axisId, nx, ny);
                 socket.send(buffer);
             }
 
-            function packAxis(player, axisId, nx, ny) {
-                // Convert normalized axis input to 8-bit signed value
-                let xInt = Math.round(nx * 127);
-                let yInt = Math.round(ny * 127);
-
+            function packMessage(msgType, id, valX, valY) {
                 const ubuf = new Uint8Array(5);
                 const sbuf = new Int8Array(5);
 
-                ubuf[0] = 0x00; // Server will fill this field
-                ubuf[1] = 0x01; // MessageType
-                ubuf[2] = axisId; // AxisID
-                sbuf[3] = xInt;
-                sbuf[4] = yInt;
+                sbuf[0] = 0x00; // Server will fill this field
+                sbuf[1] = msgType;
 
-                joystick_handle.textContent = xInt + '\n' + yInt;
+                switch (msgType) {
+                    case InputTypes.AXIS: 
+                        // Convert normalized axis input to 8-bit signed value
+                        let xInt = Math.round(valX * 127);
+                        let yInt = Math.round(valY * 127);
+
+                        sbuf[2] = id;
+                        sbuf[3] = xInt;
+                        sbuf[4] = yInt;
+
+                        joystick_handle.textContent = xInt + '\n' + yInt;
+                        break;
+
+                    case InputTypes.BUTTON: 
+                        sbuf[2] = id;
+                        sbuf[3] = valX;
+                        break;
+
+                    case InputTypes.CONNECT: 
+                        break;
+
+                    default:
+                        console.warn("Sending unknown input message type");
+                }
 
                 return sbuf;
             }

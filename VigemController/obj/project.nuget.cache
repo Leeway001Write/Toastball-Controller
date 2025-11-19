@@ -1,10 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "PnyUratXgCE=",
+  "dgSpecHash": "Bwe3QRC57KA=",
   "success": true,
-  "projectFilePath": "C:\\Users\\ginja\\workspace-mobileController\\Toastball-Controller\\VigemController\\VigemTest.csproj",
+  "projectFilePath": "C:\\Users\\ginja\\Documents\\Projects\\Toastball-Controller\\VigemController\\VigemTest.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\ginja\\.nuget\\packages\\nefarius.vigem.client\\1.21.256\\nefarius.vigem.client.1.21.256.nupkg.sha512"
+    "C:\\Users\\ginja\\.nuget\\packages\\nefarius.vigem.client\\1.21.256\\nefarius.vigem.client.1.21.256.nupkg.sha512",
+    "C:\\Users\\ginja\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.20\\microsoft.netcore.app.ref.8.0.20.nupkg.sha512",
+    "C:\\Users\\ginja\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.20\\microsoft.windowsdesktop.app.ref.8.0.20.nupkg.sha512",
+    "C:\\Users\\ginja\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.20\\microsoft.aspnetcore.app.ref.8.0.20.nupkg.sha512",
+    "C:\\Users\\ginja\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.20\\microsoft.netcore.app.host.win-x64.8.0.20.nupkg.sha512"
   ],
   "logs": []
 }
