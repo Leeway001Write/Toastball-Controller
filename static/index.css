@@ -1,12 +1,13 @@
-html {
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
 }
 
 body {
-    max-height: 100vh;
-
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
 
     background-color: black;
@@ -21,8 +22,18 @@ body {
     overflow: hidden;
     overscroll-behavior: none;
     height: 100%;
+}
 
-    padding: 10vw;
+main {
+    min-height: 90%;
+    max-height: 100%;
+    min-width: 90%;
+    max-width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .joystick {
@@ -44,9 +55,6 @@ body {
 #joystick-handle {
     width: 66%;
     height: 66%;
-    transform: translate(50px, 50px);
-    
-    /* box-shadow: 0 0 10px 10px rgba(78, 78, 78, 0.5); */
     
     display: flex;
     flex-direction: row;
@@ -80,7 +88,7 @@ body {
 }
 
 .rect {
-
+    border-radius: 12px;
 }
 
 #button-Y {
@@ -113,7 +121,7 @@ body {
 
 #button-menu {
     min-height: unset;
-    height: 20px;
+    height: 8vh;
 
     background-color: gray;
 }
