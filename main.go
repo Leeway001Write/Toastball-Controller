@@ -112,10 +112,12 @@ func addPlayer(id string) int {
 		// New player (as long as there are no more than 2)
 		if plrNum <= 4 {
 			// Connect controller
-			io.WriteString(controllerPipe, strconv.Itoa(plrNum))
+			//io.WriteString(controllerPipe, strconv.Itoa(plrNum))
+			buf := []byte{byte(plrNum), 0x00, 0x00, 0x00, 0x00}
+			controllerPipe.Write(buf)
 
 			// Create Key Bondings
-			players[id] = make(map[string]*keybd_event.KeyBonding)
+			//players[id] = make(map[string]*keybd_event.KeyBonding)
 			playerNumbers[id] = plrNum
 
 			/*leftKb, err := keybd_event.NewKeyBonding()
@@ -172,7 +174,7 @@ func addPlayer(id string) int {
 * Launch button presses
  */
 func forwardToPipe(msg []byte) {
-	fmt.Println("Plr=" + strconv.Itoa(int(msg[0])) + ", type=" + strconv.Itoa(int(msg[1])) + ", inputID=" + strconv.Itoa(int(msg[2])))
+	//fmt.Println("Plr=" + strconv.Itoa(int(msg[0])) + ", type=" + strconv.Itoa(int(msg[1])) + ", inputID=" + strconv.Itoa(int(msg[2])))
 	//fmt.Println(int8(msg[3]))
 	n, err := controllerPipe.Write(msg)
 	if err != nil {
@@ -180,6 +182,10 @@ func forwardToPipe(msg []byte) {
 	}
 	if n != len(msg) {
 		fmt.Println("Partial pipe write:", n)
+	}
+
+	if msg[1] == 0x00 {
+		fmt.Println("Player connected: ", msg[0])
 	}
 }
 func updateButtons(plr string, button int, isPressed int) {

@@ -36,7 +36,8 @@ A web app for mobile to remote control a multiplayer game of Toasterball. This w
     Receives 5-byte buffer with player number blank.
     Identifies player via host id, then sends buffer with player number to C# controller emulator via Pipe Server.
 3. **Backend C#** (controller emulator) **:**  
-    Receives 5-byte buffer including player number.
+    Receives 5-byte buffer including player number.  
+    Converts 8-bit signed values to 16-bit (`-32768..32767`).
 
 Maybe experiment with variable message sizes, reading first the message type and then reading the right number of bits to follow. This could even include the signal sent to connect the controller:
 ```

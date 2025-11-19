@@ -44,7 +44,7 @@ class ControllerInput
 
         using var vigemClient = new ViGEmClient();
 
-        Dictionary<char, IXbox360Controller> controllers = new Dictionary<char, IXbox360Controller>();
+        Dictionary<byte, IXbox360Controller> controllers = new Dictionary<byte, IXbox360Controller>();
 
         try {
             const int PACKET_SIZE = 5;
@@ -55,11 +55,11 @@ class ControllerInput
                 int n = pipeServer.Read(buf, 0, PACKET_SIZE);
                 if (n < PACKET_SIZE) {
                     if (n == 0) {
-                        Console.Write("Pipe Closed.");
+                        Console.WriteLine("Pipe Closed.");
                         break;
                     }
 
-                    Console.Write("ERROR: Partial read");
+                    Console.WriteLine("ERROR: Partial read");
                 }
 
                 // Process packet
@@ -69,10 +69,62 @@ class ControllerInput
                 sbyte valX = (sbyte) buf[3];
                 sbyte valY = (sbyte) buf[4];
 
-                Console.WriteLine("Plr=" + plr + ", type=" + msgType + ", inputID=" + inputId + ", x=" + valX + ", y=" + valY + "\t\t(" + buf + ")");
+                // Console.WriteLine("Plr=" + plr + ", type=" + msgType + ", inputID=" + inputId + ", x=" + valX + ", y=" + valY + "\t\t(" + buf + ")");
+                // Console.WriteLine($"RAW buffer: {string.Join(",", buf)}");
                 // Console.WriteLine("RAW: " +
                 //     string.Join(",", buf.Select(b => b.ToString()))
                 // );
+
+                IXbox360Controller controller;
+                switch (msgType)
+                {
+                    case (0x00):
+                        // CONNECT
+                        if (!controllers.TryGetValue(plr, out controller)) {
+                            Console.WriteLine("\tConnect controller for player", plr);
+                            controller = vigemClient.CreateXbox360Controller();
+                            controller.Connect();
+                            controllers[plr] = controller;
+                        }
+                        else
+                        {
+                            Console.WriteLine("\tPlayer reconnected:", plr);
+                        }
+
+                        Console.WriteLine("\tRelease buttons");
+                        controller.SetButtonState(Xbox360Button.LeftShoulder, false);
+                        controller.SetButtonState(Xbox360Button.RightShoulder, false);
+                        controller.SetButtonState(Xbox360Button.Left, false);
+                        controller.SetButtonState(Xbox360Button.Right, false);
+                        controller.SetButtonState(Xbox360Button.A, false);
+                        controller.SetButtonState(Xbox360Button.B, false);
+                        controller.SetButtonState(Xbox360Button.Down, false);
+                        controller.SetButtonState(Xbox360Button.Start, false);
+                        break;
+
+                    case (0x01):
+                        // AXIS
+                        // Console.WriteLine($"plr={plr}, dictionary keys=[{string.Join(",", controllers.Keys)}]");
+                        Console.WriteLine(controllers.TryGetValue(plr, out controller));
+                        try
+                        {
+                            controllers[plr].SetAxisValue(Xbox360Axis.LeftThumbX, inflateByteToShort(valX));
+                            controllers[plr].SetAxisValue(Xbox360Axis.LeftThumbY, inflateByteToShort(valY));
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Controller is not connected");
+                        }
+                        break;
+
+                    case (0x02):
+                        // BUTTON
+                        break;
+
+                    default:
+                        Console.WriteLine("ERROR: Unknown Message Type");
+                        break;
+                }
 
 
                 /*
@@ -168,18 +220,22 @@ class ControllerInput
             }
         } finally {
             foreach (var controllerPair in controllers) {
+                controllerPair.Value.SetButtonState(Xbox360Button.LeftShoulder, false);
+                controllerPair.Value.SetButtonState(Xbox360Button.RightShoulder, false);
+                controllerPair.Value.SetButtonState(Xbox360Button.Left, false);
+                controllerPair.Value.SetButtonState(Xbox360Button.Right, false);
+                controllerPair.Value.SetButtonState(Xbox360Button.A, false);
+                controllerPair.Value.SetButtonState(Xbox360Button.B, false);
+                controllerPair.Value.SetButtonState(Xbox360Button.Down, false);
+                controllerPair.Value.SetButtonState(Xbox360Button.Start, false);
+                
                 controllerPair.Value.Disconnect();
             }
         }
     }
 
-    private static short JoyAxisToVigem(char num) {
-        if (num == '0') {
-            return -32768;
-        }
-
-        double input = (num - 4) / 4.0; // Convert 0 to 8 scale to -1 to 1
-
-        return (short) Math.Floor(input * 32767);
+    private static short inflateByteToShort(sbyte num) {
+        double normalized = num / 127.0;
+        return (short) Math.Round(normalized * 32767);
     }   
 }

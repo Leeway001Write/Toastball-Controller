@@ -22,7 +22,7 @@
         </div>
 
         <script>
-            const InputTypes = {
+            const InputType = {
                 CONNECT: 0x00,
                 AXIS: 0x01,
                 BUTTON: 0x02,
@@ -242,7 +242,7 @@
             }
 
             function onDoubleTap(event) {
-                console.log("double tap");
+                console.log("double tap detected");
             }
 
             function getOutput(x, y) {
@@ -300,12 +300,12 @@
              *  (N=4)
             */
             function sendPresses(buttonId, isPressed) {
-                const buffer = packMessage(InputTypes.BUTTON, buttonId, isPressed, 0x00);
+                const buffer = packMessage(InputType.BUTTON, buttonId, isPressed, 0x00);
                 socket.send(buffer);
             }
 
             function sendAxis(axisId, nx, ny) {
-                const buffer = packMessage(InputTypes.AXIS, axisId, nx, ny);
+                const buffer = packMessage(InputType.AXIS, axisId, nx, ny);
                 socket.send(buffer);
             }
 
@@ -317,7 +317,7 @@
                 sbuf[1] = msgType;
 
                 switch (msgType) {
-                    case InputTypes.AXIS: 
+                    case InputType.AXIS: 
                         // Convert normalized axis input to 8-bit signed value
                         let xInt = Math.round(valX * 127);
                         let yInt = Math.round(valY * 127);
@@ -329,12 +329,12 @@
                         joystick_handle.textContent = xInt + '\n' + yInt;
                         break;
 
-                    case InputTypes.BUTTON: 
+                    case InputType.BUTTON: 
                         sbuf[2] = id;
                         sbuf[3] = valX;
                         break;
 
-                    case InputTypes.CONNECT: 
+                    case InputType.CONNECT: 
                         break;
 
                     default:
@@ -343,6 +343,11 @@
 
                 return sbuf;
             }
+
+            socket.addEventListener('open',  () => {
+                socket.send(packMessage(InputType.CONNECT));
+                console.log("Sent connect request");
+            });
         </script>
     </body>
 </html>
