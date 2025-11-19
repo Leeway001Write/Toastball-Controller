@@ -14,11 +14,14 @@
                 </div>
             </div>
         </div>
+        <div id="middle">
+            <div id="button-menu" class="rect button"></div>
+        </div>
         <div id="right-side">
-            <div id="button-Y" class="circle-button">Y</div>
-            <div id="button-X" class="circle-button">X</div>
-            <div id="button-B" class="circle-button">B</div>
-            <div id="button-A" class="circle-button">A</div>
+            <div id="button-Y" class="circle button">Y</div>
+            <div id="button-X" class="circle button">X</div>
+            <div id="button-B" class="circle button">B</div>
+            <div id="button-A" class="circle button">A</div>
         </div>
 
         <script>
@@ -70,6 +73,7 @@
             const buttonB = document.getElementById("button-B");
             const buttonX = document.getElementById("button-X");
             const buttonY = document.getElementById("button-Y");
+            const menuButton = document.getElementById("button-menu");
 
             const joystick_mount = document.getElementById("joystick-mount");
             const joystick_handle = document.getElementById("joystick-handle");
@@ -92,6 +96,10 @@
             buttonY.addEventListener("pointerup", () => { buttonY.classList.remove("pressed-button"); sendButton(Xbox360Button.Y, false); });
             buttonY.addEventListener("pointercancel", () => { buttonY.classList.remove("pressed-button"); sendButton(Xbox360Button.Y, false); });
 
+            menuButton.addEventListener("pointerdown", () => { menuButton.classList.add("pressed-button"); sendButton(Xbox360Button.Start, true); });
+            menuButton.addEventListener("pointerup", () => { menuButton.classList.remove("pressed-button"); sendButton(Xbox360Button.Start, false); });
+            menuButton.addEventListener("pointercancel", () => { menuButton.classList.remove("pressed-button"); sendButton(Xbox360Button.Start, false); });
+
             joystick_mount.addEventListener("pointerdown", enableJoy, false);
             joystick_mount.addEventListener("pointermove", updateJoy, false);
             joystick_mount.addEventListener("pointerup", resetJoy, false);
@@ -102,7 +110,7 @@
             function updatePlayerNumber(event) {
                 msg = event.data;
 
-                nextButton.innerText = "P"+msg;
+                //nextButton.innerText = "P"+msg;
             }
 
 
