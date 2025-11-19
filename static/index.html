@@ -2,23 +2,22 @@
 <html>
     <head>
         <title>Toasterball Controller</title>
-        <link rel="stylesheet" href="./index.css">
+        <link rel="stylesheet" href="./index.css?v=2">
     </head>
 
     <body>
-        <div id="buttonContainer">
+        <div id="left-side">
             <div id="joystick-mount" class="joystick">
                 <div id="joystick-handle" class="joystick">
                     <p>0</p>
                 </div>
             </div>
-            <div id="leftButton">&lt</div>
-            <div id="rightButton">></div>
         </div>
-        <div id="menuContainer">
-            <div id="backButton">esc</div>
-            <div id="middleButton">v GRAB v</div>
-            <div id="nextButton">[></div>
+        <div id="right-side">
+            <div id="button-Y" class="circle-button">Y</div>
+            <div id="button-X" class="circle-button">X</div>
+            <div id="button-B" class="circle-button">B</div>
+            <div id="button-A" class="circle-button">A</div>
         </div>
 
         <script>
@@ -59,38 +58,34 @@
                 UNPRESSED: 0
             }
 
-            const COLOR_L = "crimson";
-            const COLOR_R = "cornflowerblue";
-            const COLOR_L_PRESSED = "black";
-            const COLOR_R_PRESSED = "black";
-            const COLOR_B = "darkgrey";
-            const COLOR_B_PRESSED = "black";
-            const COLOR_M = "bisque";
-            const COLOR_M_PRESSED = "brown";
-            const COLOR_N = "darkgrey";
-            const COLOR_N_PRESSED = "black";
-
             const socket = new WebSocket("ws://" + location.host + "/ws");
-            const leftButton = document.getElementById("leftButton");
-            const rightButton = document.getElementById("rightButton");
-            const backButton = document.getElementById("backButton");
-            const middleButton = document.getElementById("middleButton");
-            const nextButton = document.getElementById("nextButton");
+
+            const buttonA = document.getElementById("button-A");
+            const buttonB = document.getElementById("button-B");
+            const buttonX = document.getElementById("button-X");
+            const buttonY = document.getElementById("button-Y");
+
             const joystick_mount = document.getElementById("joystick-mount");
             const joystick_handle = document.getElementById("joystick-handle");
 
             socket.addEventListener("message", updatePlayerNumber, false)
 
-            leftButton.addEventListener("touchstart", pressLeft, false);
-            leftButton.addEventListener("touchend", releaseLeft, false);
-            rightButton.addEventListener("pointerdown", pressRight, false);
-            rightButton.addEventListener("pointerup", releaseRight, false);
-            backButton.addEventListener("touchstart", pressBack, false);
-            backButton.addEventListener("touchend", releaseBack, false);
-            middleButton.addEventListener("touchstart", pressMiddle, false);
-            middleButton.addEventListener("touchend", releaseMiddle, false);
-            nextButton.addEventListener("touchstart", pressNext, false);
-            nextButton.addEventListener("touchend", releaseNext, false);
+            buttonA.addEventListener("pointerdown", () => { buttonA.classList.add("pressed-button"); sendButton(Xbox360Button.A, true); });
+            buttonA.addEventListener("pointerup", () => { buttonA.classList.remove("pressed-button"); sendButton(Xbox360Button.A, false); });
+            buttonA.addEventListener("pointercancel", () => { buttonA.classList.remove("pressed-button"); sendButton(Xbox360Button.A, false); });
+
+            buttonB.addEventListener("pointerdown", () => { buttonB.classList.add("pressed-button"); sendButton(Xbox360Button.B, true); });
+            buttonB.addEventListener("pointerup", () => { buttonB.classList.remove("pressed-button"); sendButton(Xbox360Button.B, false); });
+            buttonB.addEventListener("pointercancel", () => { buttonB.classList.remove("pressed-button"); sendButton(Xbox360Button.B, false); });
+
+            buttonX.addEventListener("pointerdown", () => { buttonX.classList.add("pressed-button"); sendButton(Xbox360Button.X, true); });
+            buttonX.addEventListener("pointerup", () => { buttonX.classList.remove("pressed-button"); sendButton(Xbox360Button.X, false); });
+            buttonX.addEventListener("pointercancel", () => { buttonX.classList.remove("pressed-button"); sendButton(Xbox360Button.X, false); });
+
+            buttonY.addEventListener("pointerdown", () => { buttonY.classList.add("pressed-button"); sendButton(Xbox360Button.Y, true); });
+            buttonY.addEventListener("pointerup", () => { buttonY.classList.remove("pressed-button"); sendButton(Xbox360Button.Y, false); });
+            buttonY.addEventListener("pointercancel", () => { buttonY.classList.remove("pressed-button"); sendButton(Xbox360Button.Y, false); });
+
             joystick_mount.addEventListener("pointerdown", enableJoy, false);
             joystick_mount.addEventListener("pointermove", updateJoy, false);
             joystick_mount.addEventListener("pointerup", resetJoy, false);
@@ -98,79 +93,19 @@
             window.addEventListener("resize", recalcGeometry, false);
             window.addEventListener("orientationchange", recalcGeometry, false);
 
-            leftButton.style.backgroundColor = COLOR_L;
-            rightButton.style.backgroundColor = COLOR_R;
-            backButton.style.backgroundColor = COLOR_B;
-            middleButton.style.backgroundColor = COLOR_M;
-            nextButton.style.backgroundColor = COLOR_N;
-
             function updatePlayerNumber(event) {
                 msg = event.data;
 
                 nextButton.innerText = "P"+msg;
             }
 
-            function pressLeft(event) {
-                event.preventDefault();
 
-                sendPresses(0,1);
-                leftButton.style.backgroundColor = COLOR_L_PRESSED;
-            }
-            function releaseLeft(event) {
-                event.preventDefault();
+            // BUTTONS
 
-                sendPresses(0,0);
-                leftButton.style.backgroundColor = COLOR_L;
-            }
-            function pressRight(event) {
-                event.preventDefault();
+            //
 
-                sendPresses(Xbox360Button.A, true);
-                rightButton.style.backgroundColor = COLOR_R_PRESSED;
-            }
-            function releaseRight(event) {
-                event.preventDefault();
-
-                sendPresses(Xbox360Button.A, false);
-                rightButton.style.backgroundColor = COLOR_R;
-            }
-
-            function pressBack(event) {
-                event.preventDefault();
-
-                sendPresses(2,1);
-                backButton.style.backgroundColor = COLOR_B_PRESSED;
-            }
-            function releaseBack(event) {
-                event.preventDefault();
-
-                sendPresses(2,0);
-                backButton.style.backgroundColor = COLOR_B;
-            }
-            function pressMiddle(event) {
-                event.preventDefault();
-
-                sendPresses(3,1);
-                middleButton.style.backgroundColor = COLOR_M_PRESSED;
-            }
-            function releaseMiddle(event) {
-                event.preventDefault();
-
-                sendPresses(3,0);
-                middleButton.style.backgroundColor = COLOR_M;
-            }
-            function pressNext(event) {
-                event.preventDefault();
-
-                sendPresses(4,1);
-                nextButton.style.backgroundColor = COLOR_N_PRESSED;
-            }
-            function releaseNext(event) {
-                event.preventDefault();
-
-                sendPresses(4,0);
-                nextButton.style.backgroundColor = COLOR_N;
-            }
+            
+            // JOYSTICK
 
             let joystickPointerId = null;
             const doubleTapForThumbPress = true;
@@ -285,21 +220,11 @@
                 offsetX = -mountOffsetX - diameter/2;
                 offsetY = -mountOffsetY - diameter/2;
                 pixelsToCenter = (mountRect.width - handleRect.width) / 2;
+
+                resetJoy();
             }
 
-            /**
-             * Send updated button data to server
-             * 
-             * +-----buffer-----+
-             * [0,      0       ]
-             *  button  pressed?
-             *  (L=0)
-             *  (R=1)
-             *  (B=2)
-             *  (M=3)
-             *  (N=4)
-            */
-            function sendPresses(buttonId, isPressed) {
+            function sendButton(buttonId, isPressed) {
                 let val = 0x00;
                 if (isPressed) {
                     val = 0x01;
@@ -307,6 +232,8 @@
 
                 const buffer = packMessage(InputType.BUTTON, buttonId, val, 0x00);
                 socket.send(buffer);
+
+                
             }
 
             function sendAxis(axisId, nx, ny) {

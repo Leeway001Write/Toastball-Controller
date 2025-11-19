@@ -2,97 +2,109 @@ html {
 }
 
 body {
-    background-color: white;
+    max-height: 100vh;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    background-color: grey;
     color: white;
     font-family: 'Trebuchet MS', sans-serif;
     font-weight: bolder;
     text-align: center;
 
     user-select: none;
+    touch-action: manipulation;
 
     overflow: hidden;
     overscroll-behavior: none;
     height: 100%;
-}
 
-#buttonContainer {
-    display:flex;
-    width: 100vw;
-    height: 70%;
-}
-#leftButton {
-    width: 50vw;
-    height: 100%;
-    color: white;
-    font-family: 'Trebuchet MS', sans-serif;
-    font-size: 50vh;
-    text-align: center;
-    line-height: 70vh;
-    border-radius: 30px;
-    touch-action: none;
-}
-#rightButton {
-    width: 50vw;
-    height: 70%;
-    font-size: 50vh;
-    line-height: 70vh;
-    border-radius: 30px;
-    touch-action: none;
-}
-
-#menuContainer {
-    display:flex;
-    width: 100vw;
-    height: 30%;
-    font-size: 15vh;
-    text-align: center;
-    line-height: 30vh;
-}
-#backButton {
-    width: 10vw;
-    height: 30vh;
-    font-size: 8vh;
-    border-radius:30px;
-}
-#middleButton {
-    width: 60vw;
-    height: 30vh;
-    border-radius: 30px;
-}
-#nextButton {
-    width: 30vw;
-    height: 30vh;
-    border-radius: 30px;
+    padding: 10vw;
 }
 
 .joystick {
-    position: absolute;
-
     background-color: gray;
 
     border-style: none;
     border-radius: 100%;
     box-shadow: 0 0 0px 12px black inset;
-
+    
     touch-action: none;
 }
 
 #joystick-mount {
-    width: 300px;
-    height: 300px;
-    top: calc(50% - 150px);
-    left: calc(20% - 150px);
+    min-width: 10vw;
+    min-height: 60vh;
+    aspect-ratio: 1;
 }
 
 #joystick-handle {
-    width: 200px;
-    height: 200px;
+    width: 66%;
+    height: 66%;
     transform: translate(50px, 50px);
-
+    
     /* box-shadow: 0 0 10px 10px rgba(78, 78, 78, 0.5); */
-
+    
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+}
+
+#left-side {
+}
+
+#right-side {    
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
+
+.circle-button {
+    min-width: 10vw;
+    min-height: 10vh;
+    aspect-ratio: 1;
+
+    font-size: 10vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+}
+
+#button-Y {
+    grid-column: 2;
+    grid-row: 1;
+
+    background-color: darkkhaki;
+}
+
+#button-X {
+    grid-column: 1;
+    grid-row: 2;
+
+    background-color: dodgerblue;
+}
+
+#button-B {
+    grid-column: 3;
+    grid-row: 2;
+
+    background-color: crimson;
+}
+
+#button-A {
+    grid-column: 2;
+    grid-row: 3;
+
+    background-color: darkgreen;
+}
+
+.pressed-button {
+    background-color: black !important;
 }
