@@ -9,20 +9,18 @@
     <body>
         <main>
             <div id="left-side">
-                <div id="joystick-mount" class="joystick">
-                    <div id="joystick-handle" class="joystick">
-                        <p>0</p>
-                    </div>
-                </div>
+                <div id="button-up" class="rect button">|</div>
+                <div id="button-down" class="rect button">|</div>
+                <div id="button-left" class="rect button">--</div>
+                <div id="button-right" class="rect button">--</div>
             </div>
             <div id="middle">
-                <div id="button-menu" class="rect button"><div class="rect"></div></div>
+                <div id="button-menu" class="circle button"><div class="rect">+</div></div>
+                <div id="button-menu" class="circle button"><div class="rect">-</div></div>
             </div>
             <div id="right-side">
-                <div id="button-Y" class="circle button"><div class="rect">Y</div></div>
-                <div id="button-X" class="circle button"><div class="rect">X</div></div>
-                <div id="button-B" class="circle button"><div class="rect">B</div></div>
-                <div id="button-A" class="circle button"><div class="rect">A</div></div>
+                <div id="button-B" class="circle button"><div class="rect">1</div></div>
+                <div id="button-A" class="circle button"><div class="rect">2</div></div>
             </div>
         </main>
 
@@ -73,12 +71,12 @@
 
             const buttonA = document.getElementById("button-A");
             const buttonB = document.getElementById("button-B");
-            const buttonX = document.getElementById("button-X");
-            const buttonY = document.getElementById("button-Y");
             const menuButton = document.getElementById("button-menu");
 
-            const joystick_mount = document.getElementById("joystick-mount");
-            const joystick_handle = document.getElementById("joystick-handle");
+            const buttonUp = document.getElementById("button-up");
+            const buttonDown = document.getElementById("button-down");
+            const buttonLeft = document.getElementById("button-left");
+            const buttonRight = document.getElementById("button-right");
 
             socket.addEventListener("message", updatePlayerNumber, false)
 
@@ -90,13 +88,21 @@
             buttonB.addEventListener("pointerup", () => { buttonB.classList.remove("pressed-button"); sendButton(Xbox360Button.B, false); });
             buttonB.addEventListener("pointercancel", () => { buttonB.classList.remove("pressed-button"); sendButton(Xbox360Button.B, false); });
 
-            buttonX.addEventListener("pointerdown", () => { buttonX.classList.add("pressed-button"); sendButton(Xbox360Button.X, true); });
-            buttonX.addEventListener("pointerup", () => { buttonX.classList.remove("pressed-button"); sendButton(Xbox360Button.X, false); });
-            buttonX.addEventListener("pointercancel", () => { buttonX.classList.remove("pressed-button"); sendButton(Xbox360Button.X, false); });
+            buttonUp.addEventListener("pointerdown", () => {buttonUp.classList.add("pressed-button"); sendButton(Xbox360Button.Up, true);});
+            buttonUp.addEventListener("pointerup", () => {buttonUp.classList.remove("pressed-button"); sendButton(Xbox360Button.Up, false);});
+            buttonUp.addEventListener("pointercancel", () => {buttonUp.classList.remove("pressed-button"); sendButton(Xbox360Button.Up, false);});
 
-            buttonY.addEventListener("pointerdown", () => { buttonY.classList.add("pressed-button"); sendButton(Xbox360Button.Y, true); });
-            buttonY.addEventListener("pointerup", () => { buttonY.classList.remove("pressed-button"); sendButton(Xbox360Button.Y, false); });
-            buttonY.addEventListener("pointercancel", () => { buttonY.classList.remove("pressed-button"); sendButton(Xbox360Button.Y, false); });
+            buttonDown.addEventListener("pointerdown", () => {buttonDown.classList.add("pressed-button"); sendButton(Xbox360Button.Down, true);});
+            buttonDown.addEventListener("pointerup", () => {buttonDown.classList.remove("pressed-button"); sendButton(Xbox360Button.Down, false);});
+            buttonDown.addEventListener("pointercancel", () => {buttonDown.classList.remove("pressed-button"); sendButton(Xbox360Button.Down, false);});
+
+            buttonLeft.addEventListener("pointerdown", () => {buttonLeft.classList.add("pressed-button"); sendButton(Xbox360Button.Left, true);});
+            buttonLeft.addEventListener("pointerup", () => {buttonLeft.classList.remove("pressed-button"); sendButton(Xbox360Button.Left, false);});
+            buttonLeft.addEventListener("pointercancel", () => {buttonLeft.classList.remove("pressed-button"); sendButton(Xbox360Button.Left, false);});
+
+            buttonRight.addEventListener("pointerdown", () => {buttonRight.classList.add("pressed-button"); sendButton(Xbox360Button.Right, true);});
+            buttonRight.addEventListener("pointerup", () => {buttonRight.classList.remove("pressed-button"); sendButton(Xbox360Button.Right, false);});
+            buttonRight.addEventListener("pointercancel", () => {buttonRight.classList.remove("pressed-button"); sendButton(Xbox360Button.Right, false);});
 
             menuButton.addEventListener("pointerdown", () => { menuButton.classList.add("pressed-button"); sendButton(Xbox360Button.Start, true); });
             menuButton.addEventListener("pointerup", () => { menuButton.classList.remove("pressed-button"); sendButton(Xbox360Button.Start, false); });

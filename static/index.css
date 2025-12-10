@@ -23,7 +23,7 @@ body {
     justify-content: center;
     align-items: center;
 
-    background-color: black;
+    background-color: white;
     color: white;
     font-family: 'Trebuchet MS', sans-serif;
     font-weight: bolder;
@@ -47,7 +47,7 @@ main {
     min-width: 90%;
     max-width: 100%;
 
-    background-color: black;
+    background-color: white;
 
     display: flex;
     flex-direction: row;
@@ -82,12 +82,24 @@ main {
 }
 
 #left-side {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, 1fr);
+}
+
+#middle {
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 #right-side {    
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 1;
+    gap: 5vw;
 }
 
 .button {
@@ -99,6 +111,10 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    color: gray;
+    background-color: white;
+    box-shadow: 0 0 0px 12px lightgray inset;
 }
 
 .circle {
@@ -110,41 +126,60 @@ main {
     border-radius: 12px;
 }
 
-#button-Y {
+#button-up {
     grid-column: 2;
     grid-row: 1;
 
-    background-color: darkkhaki;
+    height: 30vh;
 }
 
-#button-X {
+#button-down {
+    grid-column: 2;
+    grid-row: 3;
+
+    height: 30vh;
+}
+
+#button-left {
     grid-column: 1;
     grid-row: 2;
 
-    background-color: dodgerblue;
+    width: 15vw;
 }
 
-#button-B {
+#button-right {
     grid-column: 3;
     grid-row: 2;
 
-    background-color: crimson;
+    width: 15vw;
 }
 
 #button-A {
     grid-column: 2;
-    grid-row: 3;
 
-    background-color: darkgreen;
+    height: 30vh;
+
+    background-color: white;
+    box-shadow: 0 0 0px 12px lightgray inset;
+}
+
+#button-B {
+    grid-column: 1;
+
+    height: 30vh;
+
+    background-color: white;
+    box-shadow: 0 0 0px 12px lightgray inset;
 }
 
 #button-menu {
-    min-height: unset;
-    height: 8vh;
+    margin: 24px 0px;
 
-    background-color: gray;
+    color: gray;
+    background-color: white;
+    box-shadow: 0 0 0px 12px lightgray inset;
 }
 
 .pressed-button {
-    background-color: white !important;
+    background-color: lightgray !important;
 }
