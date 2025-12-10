@@ -82,9 +82,11 @@ main {
 }
 
 #left-side {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(3, 1fr);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 40vw;
 }
 
 #middle {
@@ -131,6 +133,7 @@ main {
     grid-row: 1;
 
     height: 30vh;
+    width: 50%;
 }
 
 #button-down {
@@ -138,20 +141,24 @@ main {
     grid-row: 3;
 
     height: 30vh;
+    width: 50%;
+}
+
+.middle-row {
+    grid-row: 2;
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
 }
 
 #button-left {
-    grid-column: 1;
-    grid-row: 2;
-
-    width: 15vw;
+    width: 20vw;
+    height: 40vh;
 }
 
 #button-right {
-    grid-column: 3;
-    grid-row: 2;
-
-    width: 15vw;
+    width: 20vw;
+    height: 40vh;
 }
 
 #button-A {
