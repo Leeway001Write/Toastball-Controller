@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>Toasterball Controller</title>
-        <link rel="stylesheet" href="./index.css">
+        <link rel="stylesheet" href="./index.css?v=1">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     </head>
 
@@ -19,7 +19,7 @@
             </div>
             <div id="middle">
                 <div id="button-menu" class="circle button"><div class="rect">+</div></div>
-                <div id="button-menu" class="circle button"><div class="rect">-</div></div>
+                <div id="button-save" class="circle button"><div class="rect">-</div></div>
             </div>
             <div id="right-side">
                 <div id="button-B" class="circle button"><div class="rect">1</div></div>
@@ -77,6 +77,7 @@
             const buttonA = document.getElementById("button-A");
             const buttonB = document.getElementById("button-B");
             const menuButton = document.getElementById("button-menu");
+            const saveButton = document.getElementById("button-save");
 
 
             socket.addEventListener("message", updatePlayerNumber, false)
@@ -92,6 +93,10 @@
             menuButton.addEventListener("pointerdown", () => { menuButton.classList.add("pressed-button"); sendButton(Xbox360Button.Start, true); });
             menuButton.addEventListener("pointerup", () => { menuButton.classList.remove("pressed-button"); sendButton(Xbox360Button.Start, false); });
             menuButton.addEventListener("pointercancel", () => { menuButton.classList.remove("pressed-button"); sendButton(Xbox360Button.Start, false); });
+
+            saveButton.addEventListener("pointerdown", () => { saveButton.classList.add("pressed-button"); sendButton(Xbox360Button.Y, true); });
+            saveButton.addEventListener("pointerup", () => { saveButton.classList.remove("pressed-button"); sendButton(Xbox360Button.Y, false); });
+            saveButton.addEventListener("pointercancel", () => { saveButton.classList.remove("pressed-button"); sendButton(Xbox360Button.Y, false); });
 
             // joystick_mount.addEventListener("pointerdown", enableJoy, false);
             // joystick_mount.addEventListener("pointermove", updateJoy, false);
@@ -248,7 +253,6 @@
 
             socket.addEventListener('open',  () => {
                 socket.send(packMessage(InputType.CONNECT));
-                console.log("Sent connect request");
             });
         </script>
     </body>
