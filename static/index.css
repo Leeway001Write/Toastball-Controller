@@ -87,6 +87,9 @@ main {
     position: absolute;
     left: 50%;
     top: 50%;
+    width: 66%;
+    height: 66%;
+    
     transform: translate(-50%, -50%);
 }
 

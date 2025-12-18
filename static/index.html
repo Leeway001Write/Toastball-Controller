@@ -12,7 +12,6 @@
                 <div id="joystick-box">
                     <div id="joystick-mount" class="joystick">
                         <div id="joystick-handle" class="joystick">
-                            <p>0</p>
                         </div>
                     </div>
                 </div>
@@ -152,9 +151,9 @@
 
                 joystick_mount.style.display = "flex";
                 joystick_mount.style.transform =
-                    `translate(${joyOrigin.x}px, ${joyOrigin.y}px) translate(-50%, -50%)`;
+                    `translate(${joyOrigin.x}px, ${joyOrigin.y}px) translate(-75%, -25%)`;
 
-                joystick_handle.style.transform = `translate(0px, 0px)`;
+                joystick_handle.style.transform = `translate(-50%, -50%)`;
 
                 sendAxis(0, 0, 0);
             }
@@ -182,7 +181,7 @@
                 const outY = ny * magnitude;
 
                 joystick_handle.style.transform =
-                    `translate(${nx * clampedDist}px, ${ny * clampedDist}px)`;
+                    `translate(calc(${nx * clampedDist}px - 50%), calc(${ny * clampedDist}px - 50%))`;
 
                 sendAxis(0, outX, -outY);
             }
@@ -233,7 +232,6 @@
                         sbuf[3] = xInt;
                         sbuf[4] = yInt;
 
-                        joystick_handle.textContent = xInt + '\n' + yInt;
                         break;
 
                     case InputType.BUTTON: 
