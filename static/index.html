@@ -2,19 +2,20 @@
 <html>
     <head>
         <title>Toasterball Controller</title>
-        <link rel="stylesheet" href="./index.css?v=1">
+        <link rel="stylesheet" href="./index.css">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     </head>
 
     <body>
         <main>
             <div id="left-side">
-                <div id="button-up" class="rect button">|</div>
-                <div class="middle-row">
-                    <div id="button-left" class="rect button">--</div>
-                    <div id="button-right" class="rect button">--</div>
+                <div id="joystick-box">
+                    <div id="joystick-mount" class="joystick">
+                        <div id="joystick-handle" class="joystick">
+                            <p>0</p>
+                        </div>
+                    </div>
                 </div>
-                <div id="button-down" class="rect button">|</div>
             </div>
             <div id="middle">
                 <div id="button-menu" class="circle button"><div class="rect">+</div></div>
@@ -71,14 +72,12 @@
             }, { passive: false });
 
 
+            const joystick_mount = document.getElementById("joystick-mount");
+            const joystick_handle = document.getElementById("joystick-handle");
             const buttonA = document.getElementById("button-A");
             const buttonB = document.getElementById("button-B");
             const menuButton = document.getElementById("button-menu");
 
-            const buttonUp = document.getElementById("button-up");
-            const buttonDown = document.getElementById("button-down");
-            const buttonLeft = document.getElementById("button-left");
-            const buttonRight = document.getElementById("button-right");
 
             socket.addEventListener("message", updatePlayerNumber, false)
 
@@ -90,32 +89,16 @@
             buttonB.addEventListener("pointerup", () => { buttonB.classList.remove("pressed-button"); sendButton(Xbox360Button.B, false); });
             buttonB.addEventListener("pointercancel", () => { buttonB.classList.remove("pressed-button"); sendButton(Xbox360Button.B, false); });
 
-            buttonUp.addEventListener("pointerdown", () => {buttonUp.classList.add("pressed-button"); sendButton(Xbox360Button.Up, true);});
-            buttonUp.addEventListener("pointerup", () => {buttonUp.classList.remove("pressed-button"); sendButton(Xbox360Button.Up, false);});
-            buttonUp.addEventListener("pointercancel", () => {buttonUp.classList.remove("pressed-button"); sendButton(Xbox360Button.Up, false);});
-
-            buttonDown.addEventListener("pointerdown", () => {buttonDown.classList.add("pressed-button"); sendButton(Xbox360Button.Down, true);});
-            buttonDown.addEventListener("pointerup", () => {buttonDown.classList.remove("pressed-button"); sendButton(Xbox360Button.Down, false);});
-            buttonDown.addEventListener("pointercancel", () => {buttonDown.classList.remove("pressed-button"); sendButton(Xbox360Button.Down, false);});
-
-            buttonLeft.addEventListener("pointerdown", () => {buttonLeft.classList.add("pressed-button"); sendButton(Xbox360Button.Left, true);});
-            buttonLeft.addEventListener("pointerup", () => {buttonLeft.classList.remove("pressed-button"); sendButton(Xbox360Button.Left, false);});
-            buttonLeft.addEventListener("pointercancel", () => {buttonLeft.classList.remove("pressed-button"); sendButton(Xbox360Button.Left, false);});
-
-            buttonRight.addEventListener("pointerdown", () => {buttonRight.classList.add("pressed-button"); sendButton(Xbox360Button.Right, true);});
-            buttonRight.addEventListener("pointerup", () => {buttonRight.classList.remove("pressed-button"); sendButton(Xbox360Button.Right, false);});
-            buttonRight.addEventListener("pointercancel", () => {buttonRight.classList.remove("pressed-button"); sendButton(Xbox360Button.Right, false);});
-
             menuButton.addEventListener("pointerdown", () => { menuButton.classList.add("pressed-button"); sendButton(Xbox360Button.Start, true); });
             menuButton.addEventListener("pointerup", () => { menuButton.classList.remove("pressed-button"); sendButton(Xbox360Button.Start, false); });
             menuButton.addEventListener("pointercancel", () => { menuButton.classList.remove("pressed-button"); sendButton(Xbox360Button.Start, false); });
 
-            joystick_mount.addEventListener("pointerdown", enableJoy, false);
-            joystick_mount.addEventListener("pointermove", updateJoy, false);
-            joystick_mount.addEventListener("pointerup", resetJoy, false);
-            joystick_mount.addEventListener("pointercancel", resetJoy, false);
-            window.addEventListener("resize", recalcGeometry, false);
-            window.addEventListener("orientationchange", recalcGeometry, false);
+            // joystick_mount.addEventListener("pointerdown", enableJoy, false);
+            // joystick_mount.addEventListener("pointermove", updateJoy, false);
+            // joystick_mount.addEventListener("pointerup", resetJoy, false);
+            // joystick_mount.addEventListener("pointercancel", resetJoy, false);
+            // window.addEventListener("resize", recalcGeometry, false);
+            // window.addEventListener("orientationchange", recalcGeometry, false);
 
             function updatePlayerNumber(event) {
                 msg = event.data;
@@ -131,122 +114,85 @@
             
             // JOYSTICK
 
-            let joystickPointerId = null;
-            const doubleTapForThumbPress = true;
-            const shouldMoveJoyOnTap = true;
-            let lastTapTime = 0;
-            let doubleTapThreshold = 250; // ms
+            // ==========================
+            // DYNAMIC JOYSTICK (SPAWN-AT-TOUCH)
+            // ==========================
 
-            let handleRect = joystick_handle.getBoundingClientRect();
-            let mountRect = joystick_mount.getBoundingClientRect();
+            const joystickBox = document.getElementById("joystick-box");
 
-            let diameter = handleRect.width;
-            let mountOffsetX = mountRect.left;
-            let mountOffsetY = mountRect.top;
-            let extraLength = 12;
+            let joyPointerId = null;
+            let joyOrigin = { x: 0, y: 0 };
+            let joyRadius = 0;
 
-            let offsetX = -mountOffsetX - diameter/2;
-            let offsetY = -mountOffsetY - diameter/2;
-            let pixelsToCenter = (mountRect.width - handleRect.width) / 2;
+            const DEADZONE_RATIO = 0.15;
 
-            resetJoy();
+            // Ensure handle starts hidden
+            joystick_mount.style.display = "none";
 
-            function clamp(n, min, max) {
-                if (n > max) {
-                    return max;
-                } else if (n < min) {
-                    return min;
-                }
-                return n;
+            joystickBox.addEventListener("pointerdown", onJoyStart);
+            joystickBox.addEventListener("pointermove", onJoyMove);
+            joystickBox.addEventListener("pointerup", onJoyEnd);
+            joystickBox.addEventListener("pointercancel", onJoyEnd);
+
+            function onJoyStart(e) {
+                if (joyPointerId !== null) return;
+
+                joyPointerId = e.pointerId;
+                joystickBox.setPointerCapture(e.pointerId);
+
+                joyOrigin.x = e.clientX;
+                joyOrigin.y = e.clientY;
+
+                joyRadius = joystickBox.clientWidth * 0.35;
+
+                joystick_mount.style.display = "flex";
+                joystick_mount.style.transform =
+                    `translate(${joyOrigin.x}px, ${joyOrigin.y}px) translate(-50%, -50%)`;
+
+                joystick_handle.style.transform = `translate(0px, 0px)`;
+
+                sendAxis(0, 0, 0);
             }
 
-            function enableJoy(event) {
-                if (doubleTapForThumbPress) {
-                    const now = performance.now();
-    
-                    if (now - lastTapTime < doubleTapThreshold) {
-                        onDoubleTap(event);
-                    }
-    
-                    lastTapTime = now;
-                }
+            function onJoyMove(e) {
+                if (e.pointerId !== joyPointerId) return;
 
-                if (!joystickPointerId) { // IF check prevents weird multitouch behavior
-                    joystickPointerId = event.pointerId;
-                    joystick_mount.setPointerCapture(event.pointerId);
-                    if (shouldMoveJoyOnTap) {
-                        updateJoy(event);
-                    }
-                }
-            }
-
-            function updateJoy(event) {
-                if (event.pointerId === joystickPointerId) {
-                    const x = clamp(event.clientX + offsetX, -extraLength, extraLength + mountRect.width - handleRect.width);
-                    const y = clamp(event.clientY + offsetY, -extraLength, extraLength + mountRect.height - handleRect.height);
-    
-                    joystick_handle.style.transform = `translate(${x}px, ${y}px)`;
-
-                    sendAxis(0, getOutput(x, y).x, getOutput(x,y).y);
-                }
-            }
-            function resetJoy(event) {
-                if (!event || event.pointerId === joystickPointerId) {
-                    joystickPointerId = null;
-                    joystick_handle.style.transform = `translate(${pixelsToCenter}px, ${pixelsToCenter}px)`;
-                
-                    sendAxis(0, 0, 0);
-                    joystick_handle.textContent = "0 \n 0";
-                }
-            }
-
-            function onDoubleTap(event) {
-                console.log("double tap detected");
-            }
-
-            function getOutput(x, y) {
-                const dx = x - pixelsToCenter;
-                const dy = y - pixelsToCenter;
+                const dx = e.clientX - joyOrigin.x;
+                const dy = e.clientY - joyOrigin.y;
 
                 const distance = Math.hypot(dx, dy);
-                const maxDistance = (mountRect.width - handleRect.width)/2;
-                const deadZone = maxDistance * 0.15;  // 15% inner dead-zone
+                const clampedDist = Math.min(distance, joyRadius);
 
-                // Inside dead zone — stop movement entirely
-                if (distance < deadZone) {
-                    return { x: 0, y: 0 };
+                const nx = distance === 0 ? 0 : dx / distance;
+                const ny = distance === 0 ? 0 : dy / distance;
+
+                const deadzone = joyRadius * DEADZONE_RATIO;
+                let magnitude = 0;
+
+                if (clampedDist > deadzone) {
+                    magnitude = (clampedDist - deadzone) / (joyRadius - deadzone);
                 }
 
-                // Normalize direction
-                const nx = dx / distance;
-                const ny = dy / distance;
+                const outX = nx * magnitude;
+                const outY = ny * magnitude;
 
-                // Remap distance from dead-zone boundary → max boundary
-                let scaledDist = (distance - deadZone) / (maxDistance - deadZone);
-                scaledDist = Math.min(scaledDist, 1);
+                joystick_handle.style.transform =
+                    `translate(${nx * clampedDist}px, ${ny * clampedDist}px)`;
 
-                return {
-                    x: nx * scaledDist,   // range: -1 → +1
-                    y: -ny * scaledDist
-                };
+                sendAxis(0, outX, -outY);
             }
 
+            function onJoyEnd(e) {
+                if (e.pointerId !== joyPointerId) return;
 
-            function recalcGeometry() {
-                handleRect = joystick_handle.getBoundingClientRect();
-                mountRect = joystick_mount.getBoundingClientRect();
+                joyPointerId = null;
 
-                diameter = handleRect.width;
-                mountOffsetX = mountRect.left;
-                mountOffsetY = mountRect.top;
-                extraLength = 12;
+                joystick_mount.style.display = "none";
+                joystick_handle.style.transform = `translate(0px, 0px)`;
 
-                offsetX = -mountOffsetX - diameter/2;
-                offsetY = -mountOffsetY - diameter/2;
-                pixelsToCenter = (mountRect.width - handleRect.width) / 2;
-
-                resetJoy();
+                sendAxis(0, 0, 0);
             }
+
 
             function sendButton(buttonId, isPressed) {
                 let val = 0x00;
