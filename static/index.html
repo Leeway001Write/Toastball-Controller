@@ -139,7 +139,10 @@
             joystickBox.addEventListener("pointercancel", onJoyEnd);
 
             function onJoyStart(e) {
-                if (joyPointerId !== null) return;
+                if (joyPointerId !== null) {
+                    onJoyEnd(e);
+                    return;
+                }
 
                 joyPointerId = e.pointerId;
                 joystickBox.setPointerCapture(e.pointerId);
@@ -187,8 +190,6 @@
             }
 
             function onJoyEnd(e) {
-                if (e.pointerId !== joyPointerId) return;
-
                 joyPointerId = null;
 
                 joystick_mount.style.display = "none";
