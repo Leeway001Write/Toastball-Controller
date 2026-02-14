@@ -109,8 +109,8 @@ func addPlayer(id string) int {
 		plrNum = playerNumbers[id]
 		fmt.Println("Player", plrNum, "already exists:", id)
 	} else {
-		// New player (as long as there are no more than 2)
-		if plrNum <= 4 {
+		// New player
+		if plrNum <= 8 {
 			// Connect controller
 			//io.WriteString(controllerPipe, strconv.Itoa(plrNum))
 			buf := []byte{byte(plrNum), 0x00, 0x00, 0x00, 0x00}
