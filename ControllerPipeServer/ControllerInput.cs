@@ -82,50 +82,57 @@ class ControllerInput
 
                         Console.WriteLine("plrNumber: " + plrNumber + ", button: " + button + ", isPressed: " + isPressed);
 
-                        if (button == '0') {
-                            // LEFT
-                            if (isPressed == '1') {
-                                controllers[plrNumber].SetButtonState(Xbox360Button.LeftShoulder, true);
-                                controllers[plrNumber].SetButtonState(Xbox360Button.Left, true);
+                        if (!controllers.ContainsKey(plrNumber)) {
+                            Console.WriteLine("Controller for player " + plrNumber + " does not exist yet.");
+                        } else
+                        {
+                            if (button == '0') {
+                                // LEFT
+                                if (isPressed == '1') {
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.LeftShoulder, true);
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.Left, true);
+                                } else {
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.LeftShoulder, false);
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.Left, false);
+                                }
+                            } else if (button == '1') {
+                                // RIGHT
+                                if (isPressed == '1') {
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.RightShoulder, true);
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.Right, true);
+                                } else {
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.RightShoulder, false);
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.Right, false);
+                                }
+                            } else if (button == '2') {
+                                // BACK
+                                if (isPressed == '1') {
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.B, true);
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.Start, true);
+                                } else {
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.B, false);
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.Start, false);
+                                }
+                            } else if (button == '3') {
+                                // MIDDLE
+                                if (isPressed == '1') {
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.Down, true);
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.A, true);
+                                } else {
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.Down, false);
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.A, false);
+                                }
                             } else {
-                                controllers[plrNumber].SetButtonState(Xbox360Button.LeftShoulder, false);
-                                controllers[plrNumber].SetButtonState(Xbox360Button.Left, false);
+                                // NEXT
+                                if (isPressed == '1') {
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.A, true);
+                                } else {
+                                    controllers[plrNumber].SetButtonState(Xbox360Button.A, false);
+                                }
                             }
-                        } else if (button == '1') {
-                            // RIGHT
-                            if (isPressed == '1') {
-                                controllers[plrNumber].SetButtonState(Xbox360Button.RightShoulder, true);
-                                controllers[plrNumber].SetButtonState(Xbox360Button.Right, true);
-                            } else {
-                                controllers[plrNumber].SetButtonState(Xbox360Button.RightShoulder, false);
-                                controllers[plrNumber].SetButtonState(Xbox360Button.Right, false);
-                            }
-                        } else if (button == '2') {
-                            // BACK
-                            if (isPressed == '1') {
-                                controllers[plrNumber].SetButtonState(Xbox360Button.B, true);
-                                controllers[plrNumber].SetButtonState(Xbox360Button.Start, true);
-                            } else {
-                                controllers[plrNumber].SetButtonState(Xbox360Button.B, false);
-                                controllers[plrNumber].SetButtonState(Xbox360Button.Start, false);
-                            }
-                        } else if (button == '3') {
-                            // MIDDLE
-                            if (isPressed == '1') {
-                                controllers[plrNumber].SetButtonState(Xbox360Button.Down, true);
-                                controllers[plrNumber].SetButtonState(Xbox360Button.A, true);
-                            } else {
-                                controllers[plrNumber].SetButtonState(Xbox360Button.Down, false);
-                                controllers[plrNumber].SetButtonState(Xbox360Button.A, false);
-                            }
-                        } else {
-                            // NEXT
-                            if (isPressed == '1') {
-                                controllers[plrNumber].SetButtonState(Xbox360Button.A, true);
-                            } else {
-                                controllers[plrNumber].SetButtonState(Xbox360Button.A, false);
-                            }
+                            
                         }
+
                     }
                 }
             }
